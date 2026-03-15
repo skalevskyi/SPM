@@ -1,0 +1,10 @@
+# ADMOVE — UTF-8 discipline, consistent line endings
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+
+[*.{ts,tsx,js,jsx,json,md,css}]
+charset = utf-8
+end_of_line = lf

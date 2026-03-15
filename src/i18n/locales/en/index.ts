@@ -1,0 +1,33 @@
+/**
+ * EN locale — assembled from section modules. Structure must match FR.
+ */
+
+import {
+  locations,
+  nav,
+  footer,
+  floating,
+  mobileNav,
+  theme,
+  language,
+} from './common';
+import { hero } from './hero';
+import { support } from './support';
+import { parcours } from './parcours';
+import { offres } from './offres';
+import { contact } from './contact';
+
+export const en = {
+  locations,
+  nav,
+  hero,
+  support,
+  parcours,
+  offres,
+  contact,
+  footer,
+  floating,
+  mobileNav,
+  theme,
+  language,
+} as const;
