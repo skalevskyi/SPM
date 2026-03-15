@@ -7,13 +7,6 @@
   --background: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground: #f8fafc;
-    --background: #0f172a;
-  }
-}
-
 html.dark {
   --foreground: #f8fafc;
   --background: #0f172a;
