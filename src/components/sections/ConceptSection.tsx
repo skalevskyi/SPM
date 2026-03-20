@@ -28,11 +28,12 @@ export function ConceptSection() {
   return (
     <section
       id="support"
-      className="border-t border-slate-200 bg-slate-50/50 py-16 dark:border-slate-800 dark:bg-slate-900/30"
+      className="border-t border-slate-200 bg-slate-50/40 py-16 dark:border-slate-800 dark:bg-slate-900/25"
     >
-      <div className="mx-auto max-w-4xl px-4 md:px-6">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <div className="mx-auto max-w-4xl">
         <motion.h2
-          className="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl"
+          className="text-3xl font-bold leading-tight text-slate-900 dark:text-white md:text-4xl"
           initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
@@ -41,7 +42,7 @@ export function ConceptSection() {
           {t.support.title}
         </motion.h2>
         <motion.p
-          className="mt-4 text-lg text-slate-600 dark:text-slate-300"
+          className="mt-4 max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300 md:text-lg"
           initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
@@ -50,7 +51,7 @@ export function ConceptSection() {
           {t.support.subtitle}
         </motion.p>
         <motion.div
-          className="mt-10 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800/50"
+          className="mt-10 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800/55"
           variants={container}
           initial="hidden"
           whileInView="visible"
@@ -62,19 +63,19 @@ export function ConceptSection() {
                 index === 0 ? Car : index === 1 ? MapPin : index === 2 ? Repeat : BarChart3;
               return (
                 <motion.div
-                  key={step.title}
+                  key={index}
                   variants={item}
-                  className="flex items-start gap-3"
+                  className="flex min-w-0 items-start gap-3"
                 >
                   <Icon
                     className="mt-0.5 h-5 w-5 shrink-0 stroke-[2] text-sky-600 dark:text-sky-400"
                     aria-hidden
                   />
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  <div className="min-w-0 space-y-1.5">
+                    <h3 className="text-sm font-semibold leading-snug text-slate-900 dark:text-white">
                       {step.title}
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
+                    <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 break-words">
                       {step.text}
                     </p>
                   </div>
@@ -83,15 +84,16 @@ export function ConceptSection() {
             })}
           </div>
 
-          <div className="mt-6">
-            <p className="text-sm font-semibold text-slate-900 dark:text-white">
+          <div className="mt-6 border-t border-slate-200/80 pt-5 dark:border-slate-700/70">
+            <p className="text-sm font-semibold leading-snug text-slate-900 dark:text-white">
               {t.support.methodologyTitle}
             </p>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300 break-words">
               {t.support.methodologyText}
             </p>
           </div>
         </motion.div>
+        </div>
       </div>
     </section>
   );

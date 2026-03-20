@@ -28,7 +28,7 @@ export const footer = {
   positioning: 'Local mobile advertising between Montpellier and the coast.',
   tagline:
     'Mobile advertising Montpellier & Coast — Carnon, Palavas, La Grande-Motte, Port Marianne.',
-  copyright: '© ADMOVE',
+  copyright: '© Skalevskyi publicité mobile',
 } as const;
 
 export const floating = {

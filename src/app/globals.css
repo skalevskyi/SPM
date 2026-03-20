@@ -9,11 +9,12 @@
 
 html.dark {
   --foreground: #f8fafc;
-  --background: #0f172a;
+  --background: #0b1220;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 72px;
 }
 
 @media (prefers-reduced-motion: reduce) {

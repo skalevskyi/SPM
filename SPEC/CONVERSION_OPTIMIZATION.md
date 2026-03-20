@@ -57,6 +57,7 @@ In Phase 2A, the Process / Support section is already presented as a short visua
 
 - Make “how the medium works” understandable at a glance.
 - Support the credibility of visibility numbers introduced later (Parcours, Offres).
+- Preserve stable step rendering on locale switching so the flow stays fully visible without hard reload.
 
 ---
 
@@ -153,6 +154,8 @@ Publicité mobile Montpellier
 ```
 
 Navigation (Support, Parcours, Offres, Contact) remains in the navbar and mobile bottom nav; footer stays minimal and on-brand.
+
+Mobile bottom navigation interaction should stay frictionless: active state switches immediately on tap with a discrete press/release feel (no shared sliding transfer between items).
 
 ---
 

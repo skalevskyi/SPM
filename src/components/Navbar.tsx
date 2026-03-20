@@ -1,9 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Globe, Info, Mail, Moon, Package, Route, Sun } from 'lucide-react';
+import { Globe, Layers, Mail, Moon, Package, Route, Sun } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 
 import { useLanguage } from '@/context/LanguageContext';
@@ -12,10 +11,10 @@ import { BASE_PATH } from '@/lib/base-path';
 import type { Locale } from '@/i18n';
 
 const linkClass =
-  'text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded px-1';
+  'text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70 rounded px-1';
 
 const desktopNavLinkBaseClass =
-  'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition';
+  'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70 transition-colors duration-150 ease-out';
 
 const LOCALES: { value: Locale; label: string }[] = [
   { value: 'fr', label: 'FR' },
@@ -24,7 +23,7 @@ const LOCALES: { value: Locale; label: string }[] = [
 ];
 
 const DESKTOP_ITEMS = [
-  { key: 'support' as const, href: '#support', icon: Info },
+  { key: 'support' as const, href: '#support', icon: Layers },
   { key: 'parcours' as const, href: '#parcours', icon: Route },
   { key: 'offres' as const, href: '#offres', icon: Package },
   { key: 'contact' as const, href: '#contact', icon: Mail },
@@ -86,7 +85,7 @@ function LanguageSwitcher() {
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
         aria-label={t.language.label}
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -107,7 +106,7 @@ function LanguageSwitcher() {
                   setLocale(value);
                   setOpen(false);
                 }}
-                className={`w-full px-3 py-2 text-left text-sm transition focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-inset dark:focus:ring-offset-0 ${
+                className={`w-full px-3 py-2 text-left text-sm transition focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70 ${
                   locale === value
                     ? 'bg-sky-50 font-medium text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
                     : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50'
@@ -131,7 +130,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+      className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
       aria-label={theme === 'dark' ? t.theme.light : t.theme.dark}
     >
       {theme === 'dark' ? (
@@ -178,26 +177,24 @@ export function Navbar() {
 
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90 md:border-none md:bg-transparent md:backdrop-blur-none md:flex md:justify-center md:px-4 md:pt-3"
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/85 md:border-none md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:flex md:justify-center md:px-4 md:pt-3"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
       <nav
-        className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:w-full md:rounded-2xl md:border md:border-slate-200/80 md:bg-white/80 md:px-6 md:py-3 md:shadow-md md:backdrop-blur-md dark:md:border-slate-700 dark:md:bg-slate-900/80"
+        className="mx-auto flex min-w-0 max-w-6xl items-center justify-between gap-4 px-4 py-4 md:w-full md:rounded-2xl md:border md:border-slate-200/80 md:bg-white/90 md:px-6 md:py-3 md:shadow-md md:backdrop-blur-sm dark:md:border-slate-700/70 dark:md:bg-slate-950/85 dark:md:shadow-lg dark:md:shadow-slate-950/45"
         aria-label={t.nav.ariaLabel}
       >
         <Link
           href="#hero"
-          className="flex min-w-0 items-center gap-2 rounded-lg px-1 py-1 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+          className="flex min-w-0 items-center gap-2 rounded-lg px-1 py-1 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
         >
-          <Image
-            src={`${BASE_PATH}/logo/web-app-manifest-192x192.png`}
+          <img
+            src={`${BASE_PATH}/logo/favicon.svg`}
             alt="Skalevskyi — publicité mobile"
-            width={32}
-            height={32}
-            className="h-8 w-8 shrink-0 rounded-lg object-contain"
-            priority
+            loading="eager"
+            className="h-7 md:h-8 w-auto shrink-0"
           />
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="text-xs font-semibold tracking-[0.18em] text-slate-900 dark:text-white">
@@ -209,7 +206,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden items-center justify-center gap-8 md:flex">
+        <ul className="hidden min-w-0 items-center justify-center md:gap-4 lg:gap-8 md:flex">
           {DESKTOP_ITEMS.map(({ key, href, icon: Icon }) => {
             const isActive = mounted && activeSection === href.slice(1);
             const label =
@@ -224,10 +221,11 @@ export function Navbar() {
               <li key={href}>
                 <a
                   href={href}
+                  onClick={() => setActiveSection(href.slice(1))}
                   className={`${desktopNavLinkBaseClass} ${
                     isActive
                       ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white'
                   }`}
                   aria-current={isActive ? 'true' : undefined}
                 >

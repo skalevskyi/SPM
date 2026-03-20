@@ -1,4 +1,4 @@
-# SEO Strategy — ADMOVE
+# SEO Strategy — SPM
 
 ## Primary Keywords
 
@@ -35,7 +35,7 @@ Use in subpages, FAQ and blog content when those exist.
 ## Local SEO Pages
 
 - One main landing (current site) targeting primary keywords.
-- Optional local pages per city/area (e.g. ADMOVE publicité mobile Montpellier; ADMOVE publicité Carnon / Palavas / La Grande-Motte / Port Marianne). Each page: localised content, route mention, contact CTA, same formats (Rear, Side, Full). Pricing: indicative via calculator when implemented; no fixed price ladder in public content.
+- Optional local pages per city/area (e.g. SPM publicité mobile Montpellier; SPM publicité Carnon / Palavas / La Grande-Motte / Port Marianne). Each page: localised content, route mention, contact CTA, same formats (Rear, Side, Full). Pricing: indicative via calculator when implemented; no fixed price ladder in public content.
 
 ## Blog Ideas (when applicable)
 
@@ -50,7 +50,7 @@ Goals: long-tail keywords, expertise, internal links to main offer and contact.
 
 ## Google Business Optimization
 
-- **Profile:** ADMOVE — publicité mobile Montpellier / Littoral.
+- **Profile:** SPM — publicité mobile Montpellier / Littoral.
 - **Category:** Advertising agency or relevant local category.
 - **Zone:** Montpellier and/or main cities on the route.
 - **Description:** Value proposition, formats (Rear, Side, Full), coverage (Montpellier, Port Marianne, Carnon, Palavas, La Grande-Motte), indicative pricing/calculator mention, CTA.

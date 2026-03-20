@@ -11,7 +11,7 @@ import {
 
 import { getTranslations, type Locale, type TranslationKeys } from '@/i18n';
 
-const LOCALE_KEY = 'admove-locale';
+const LOCALE_KEY = 'spm-locale';
 
 type LanguageContextValue = {
   locale: Locale;
@@ -25,6 +25,17 @@ function getStoredLocale(): Locale {
   if (typeof window === 'undefined') return 'fr';
   const stored = localStorage.getItem(LOCALE_KEY) as Locale | null;
   if (stored === 'fr' || stored === 'en' || stored === 'ua') return stored;
+
+  // Backward-compatible fallback: read any existing `*-locale` key in localStorage.
+  // This avoids hardcoding legacy brand keys while still preserving stored preference.
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (!key || key === LOCALE_KEY) continue;
+    if (!key.endsWith('-locale')) continue;
+    const legacyStored = localStorage.getItem(key) as Locale | null;
+    if (legacyStored === 'fr' || legacyStored === 'en' || legacyStored === 'ua') return legacyStored;
+  }
+
   return 'fr';
 }
 

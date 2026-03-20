@@ -1,4 +1,4 @@
-# Pricing Model — ADMOVE
+# Pricing Model — SPM
 
 **Pricing is determined dynamically using an estimation model.** The website uses a calculator to generate indicative pricing. This document describes the pricing estimation concept, possible variables, and future calculator logic. **It does not contain fixed prices.**
 

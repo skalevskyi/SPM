@@ -1,6 +1,6 @@
 # SPM — Mobile UI Audit Report
 
-**Date:** 2025-03-14  
+**Date:** 2026-03-19  
 **Mode:** Read-only analysis. No code or architecture changes.  
 **Viewport focus:** 320px – 430px width.
 
@@ -157,5 +157,10 @@ The following items have been addressed in post-audit implementation (documentat
 | **Timeline interaction hint** | **Implemented** | A subtle one-line hint was added under the left route timeline to clarify the click interaction (pause + context). |
 | **Parcours right-side copy** | **Updated** | Right-side benefits are now semi-dynamic by active route point; the redundant shared note under bullets was removed. |
 | **Visibility estimation presentation** | **Improved** | The estimation block uses a more polished mini-card presentation for BASIC / PRO / EXCLUSIVE. |
+| **UA typography stability** | **FIXED** | Manrope font loader includes the Cyrillic subset so UA doesn’t fall back to a different font and change text metrics/wrapping. |
+| **Support render consistency** | **FIXED** | ConceptSection step animation uses locale-invariant keying so locale switching doesn’t leave steps hidden/partial. |
+| **Hero mobile rhythm** | **Addressed** | Mobile-only vertical rhythm was tightened to reduce perceived drift from longer UA copy without changing desktop behavior. |
+| **Mobile bottom nav active shell** | **Improved** | Active mobile bottom nav item uses a clearer shell treatment with immediate click-driven switching. |
+| **Mobile bottom nav motion behavior** | **Refined** | Shared/sliding active transfer was removed; active switch is discrete (old item releases, new item presses) with no geometry morph. |
 
 Historical audit sections (1–5) remain for context; the above reflects current implementation state.

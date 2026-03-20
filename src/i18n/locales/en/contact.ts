@@ -4,7 +4,8 @@
 
 export const contact = {
   title: 'Contact',
-  subtitle: 'Request a quote or more information.',
+  subtitle:
+    'Leave your request and we will contact you to confirm an estimate tailored to your objective.',
   name: 'Name',
   company: 'Company',
   email: 'Email',
@@ -15,5 +16,7 @@ export const contact = {
   placeholderEmail: 'email@example.com',
   placeholderPhone: '+33 6 00 00 00 00',
   placeholderMessage: 'Your message or quote request...',
-  submit: 'Send',
+  reassurance:
+    'No commitment. Your estimate is confirmed after a short exchange. No spam.',
+  submit: 'Request your estimate',
 } as const;

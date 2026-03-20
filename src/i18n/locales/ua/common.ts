@@ -11,7 +11,7 @@ export const locations = {
 } as const;
 
 export const nav = {
-  support: 'Як працює',
+  support: 'Процес',
   parcours: 'Маршрут',
   offres: 'Пропозиції',
   contact: 'Контакт',
@@ -20,7 +20,7 @@ export const nav = {
 
 export const footer = {
   links: {
-    support: 'Як працює',
+    support: 'Процес',
     parcours: 'Маршрут',
     offres: 'Пропозиції',
     contact: 'Контакт',
@@ -29,7 +29,7 @@ export const footer = {
     'Локальна мобільна реклама між Монпельє та узбережжям.',
   tagline:
     'Мобільна реклама Монпельє та узбережжя — Карнон, Палавас, Ла-Гранд-Мотт, Порт-Маріанн.',
-  copyright: '© ADMOVE',
+  copyright: '© Skalevskyi publicité mobile',
 } as const;
 
 export const floating = {
@@ -38,7 +38,7 @@ export const floating = {
 
 export const mobileNav = {
   home: 'Головна',
-  support: 'Як працює',
+  support: 'Процес',
   parcours: 'Маршрут',
   offres: 'Пропозиції',
   contact: 'Контакт',

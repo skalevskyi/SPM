@@ -1,4 +1,4 @@
-# Visibility Model — ADMOVE
+# Visibility Model — SPM
 
 Methodology and assumptions for daily and monthly visibility estimates. **Current numbers are indicative placeholders;** final numbers will be derived from the methodology and, where available, real traffic and route data.
 

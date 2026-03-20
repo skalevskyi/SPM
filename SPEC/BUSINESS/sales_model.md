@@ -1,4 +1,4 @@
-# Sales Model — ADMOVE
+# Sales Model — SPM
 
 ## Value Proposition
 

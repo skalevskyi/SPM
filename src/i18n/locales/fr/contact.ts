@@ -4,7 +4,8 @@
 
 export const contact = {
   title: 'Contact',
-  subtitle: 'Demandez un devis ou des informations.',
+  subtitle:
+    'Laissez votre demande et nous vous recontactons pour confirmer une estimation adaptée à votre objectif.',
   name: 'Nom',
   company: 'Société',
   email: 'Email',
@@ -15,5 +16,7 @@ export const contact = {
   placeholderEmail: 'email@exemple.fr',
   placeholderPhone: '06 00 00 00 00',
   placeholderMessage: 'Votre message ou demande de devis...',
-  submit: 'Envoyer',
+  reassurance:
+    "Sans engagement. Estimation confirmée après échange. Vos informations ne sont pas utilisées à d'autres fins.",
+  submit: 'Demander votre estimation',
 } as const;

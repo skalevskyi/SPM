@@ -1,8 +1,8 @@
-# Product Specification — ADMOVE
+# Product Specification — SPM
 
 ## Product Concept
 
-ADMOVE is a **micro-OOH (out-of-home) advertising** service: **one vehicle, one route, three formats.** A single branded vehicle (Nissan Qashqai SUV) circulates daily on a fixed route in Montpellier and the Littoral. Advertisers buy space on the vehicle (rear, sides, or full wrap) and benefit from estimated visibility linked to the route and methodology. **Local visibility for Montpellier and the Littoral.**
+SPM is a **micro-OOH (out-of-home) advertising** service: **one vehicle, one route, three formats.** A single branded vehicle (Nissan Qashqai SUV) circulates daily on a fixed route in Montpellier and the Littoral. Advertisers buy space on the vehicle (rear, sides, or full wrap) and benefit from estimated visibility linked to the route and methodology. **Local visibility for Montpellier and the Littoral.**
 
 ## Vehicle
 

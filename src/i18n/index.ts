@@ -1,5 +1,5 @@
 /**
- * ADMOVE i18n — FR-first, section-based. Whole-locale fallback only.
+ * SPM i18n — FR-first, section-based. Whole-locale fallback only.
  */
 
 import { fr } from './locales/fr';

@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-const THEME_KEY = 'admove-theme';
+const THEME_KEY = 'spm-theme';
 
 export type Theme = 'light' | 'dark';
 
@@ -25,6 +25,17 @@ function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem(THEME_KEY) as Theme | null;
   if (stored === 'dark' || stored === 'light') return stored;
+
+  // Backward-compatible fallback: read any existing `*-theme` key in localStorage.
+  // This avoids hardcoding legacy brand keys while preserving stored preference.
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (!key || key === THEME_KEY) continue;
+    if (!key.endsWith('-theme')) continue;
+    const legacyStored = localStorage.getItem(key) as Theme | null;
+    if (legacyStored === 'dark' || legacyStored === 'light') return legacyStored;
+  }
+
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 

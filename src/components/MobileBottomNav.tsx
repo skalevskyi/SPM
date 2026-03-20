@@ -1,12 +1,12 @@
 'use client';
 
-import { Info, Mail, Package, Route } from 'lucide-react';
+import { Layers, Mail, Package, Route } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { useLanguage } from '@/context/LanguageContext';
 
 const ITEMS = [
-  { key: 'support' as const, href: '#support', icon: Info },
+  { key: 'support' as const, href: '#support', icon: Layers },
   { key: 'parcours' as const, href: '#parcours', icon: Route },
   { key: 'offres' as const, href: '#offres', icon: Package },
   { key: 'contact' as const, href: '#contact', icon: Mail },
@@ -14,8 +14,7 @@ const ITEMS = [
 
 const SECTION_IDS = ITEMS.map((item) => item.href.slice(1));
 
-const focusRing =
-  'focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900';
+const interactionReset = 'outline-none focus:outline-none focus-visible:outline-none';
 
 function getActiveSectionFromHash(): string | null {
   if (typeof window === 'undefined') return null;
@@ -77,22 +76,23 @@ export function MobileBottomNav() {
       className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
       aria-label={t.mobileNav.ariaLabel}
     >
-      <div className="mx-auto flex w-full max-w-lg items-center justify-around rounded-3xl border border-slate-200/90 bg-white/80 px-2 py-3 shadow-lg shadow-slate-200/50 backdrop-blur-md dark:border-slate-600/80 dark:bg-slate-900/80 dark:shadow-slate-950/30">
+      <div className="mx-auto grid w-full max-w-lg grid-cols-4 items-center rounded-3xl border border-slate-200/90 bg-white/80 px-2 py-3 shadow-lg shadow-slate-200/50 backdrop-blur-md dark:border-slate-700/90 dark:bg-slate-900/95 dark:shadow-slate-950/60">
         {ITEMS.map(({ key, href, icon: Icon }) => {
           const isActive = mounted && activeSection === href.slice(1);
           return (
             <a
               key={href}
               href={href}
-              className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 text-xs font-medium transition ${focusRing} ${
+              onClick={() => setActiveSection(href.slice(1))}
+              className={`flex min-h-[44px] w-full min-w-0 flex-col items-center justify-center gap-1 border border-transparent px-2 py-2 text-[11px] font-medium leading-tight transition-colors duration-150 ease-out ${interactionReset} ${
                 isActive
-                  ? 'text-sky-600 dark:text-sky-400'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                  ? 'rounded-3xl bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400'
+                  : 'rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
               aria-current={isActive ? 'true' : undefined}
             >
               <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden />
-              <span>{t.mobileNav[key]}</span>
+              <span className="w-full truncate text-center whitespace-nowrap">{t.mobileNav[key]}</span>
             </a>
           );
         })}

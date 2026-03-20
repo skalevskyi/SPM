@@ -81,11 +81,11 @@ export function VehicleSection() {
     <section id="parcours" className="py-16">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         {/* Shared section header */}
-        <header className="mx-auto mb-10 max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">
+        <header className="mx-auto mb-10 max-w-4xl text-center">
+          <h2 className="text-3xl font-bold leading-tight text-slate-900 dark:text-white md:text-4xl">
             {t.parcours.title}
           </h2>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 md:text-base">
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:text-base">
             {t.parcours.subtitle}
           </p>
         </header>
@@ -99,33 +99,33 @@ export function VehicleSection() {
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: reducedMotion ? 0 : 0.4 }}
           >
-            <div className="w-fit flex flex-col mx-auto md:w-full md:max-w-xs">
+            <div className="mx-auto flex w-fit flex-col md:w-full md:max-w-xs">
               {routePoints.map((point, i) => {
                 const isActive = activeIndex === i;
                 const isFilled = i < activeIndex;
                 const isSegmentFilled =
                   i < routePoints.length - 1 && i < activeIndex;
                 return (
-                  <div key={point.id} className="flex items-start gap-2.5 py-1">
+                  <div key={point.id} className="flex min-w-0 items-start gap-2.5 py-1">
                     <div className="flex flex-col items-center">
                       <button
                         type="button"
                         onClick={() => handleMarkerClick(i)}
                         aria-label={`${point.label} — ${point.descriptor}`}
                         aria-current={isActive ? 'true' : undefined}
-                        className={`relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
+                        className={`relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors duration-150 ease-out active:bg-slate-100 dark:active:bg-slate-800 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70 ${
                           isActive
                             ? 'ring-2 ring-sky-500/60 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 dark:ring-sky-400/50'
                             : ''
                         }`}
                       >
                         <span
-                          className={`block rounded-full transition-all duration-300 ${
+                          className={`block rounded-full transition-colors duration-150 ease-out ${
                             isActive
                               ? 'h-2.5 w-2.5 bg-slate-700 dark:bg-slate-200'
                               : isFilled
                                 ? 'h-2 w-2 bg-sky-500 dark:bg-sky-400'
-                                : 'h-1.5 w-1.5 border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900 hover:scale-[1.05] hover:border-slate-400 dark:hover:border-slate-500'
+                                : 'h-1.5 w-1.5 border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-500'
                           }`}
                         />
                       </button>
@@ -143,10 +143,10 @@ export function VehicleSection() {
                     <button
                       type="button"
                       onClick={() => handleMarkerClick(i)}
-                      className="text-left focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 rounded px-1 -ml-1 transition-all duration-300"
+                      className="min-w-0 -ml-1 rounded px-1 text-left transition-colors duration-150 ease-out active:bg-slate-100 dark:active:bg-slate-800 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
                     >
                       <span
-                        className={`block text-sm leading-tight ${
+                        className={`block max-w-[10.5rem] break-words text-sm leading-snug ${
                           isActive
                             ? 'font-semibold text-slate-800 dark:text-white'
                             : 'font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
@@ -155,7 +155,7 @@ export function VehicleSection() {
                         {point.label}
                       </span>
                       <span
-                        className={`mt-px block text-xs text-slate-500 dark:text-slate-400 leading-tight ${
+                        className={`mt-px block max-w-[10.5rem] break-words text-xs leading-relaxed text-slate-500 dark:text-slate-400 ${
                           !isActive ? 'invisible' : ''
                         }`}
                       >
@@ -166,32 +166,37 @@ export function VehicleSection() {
                 );
               })}
 
-              <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+              <div className="mt-3 flex max-w-xs items-start gap-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                 <MousePointerClick className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" strokeWidth={1.5} aria-hidden />
-                <span className="whitespace-nowrap">{t.parcours.timelineHint}</span>
+                <span className="break-words">{t.parcours.timelineHint}</span>
               </div>
             </div>
           </motion.div>
 
           {/* Right: dynamic title + description, then static bullets + note */}
-          <div className="flex max-w-xl flex-col space-y-5">
-            <div className="min-h-[108px] md:min-h-[124px]">
+          <motion.div
+            layout
+            className="flex max-w-xl flex-col space-y-5"
+            transition={{ duration: reducedMotion ? 0 : 0.26, ease: 'easeOut' }}
+          >
+            <div>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeLocationId}
-                  className="flex flex-col gap-3"
+                  layout
+                  className="flex min-w-0 flex-col gap-3"
                   initial={{ opacity: reducedMotion ? 1 : 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: reducedMotion ? 1 : 0 }}
                   transition={{
-                    duration: reducedMotion ? 0 : 0.2,
+                    duration: reducedMotion ? 0 : 0.24,
                     ease: 'easeOut',
                   }}
                 >
-                  <h3 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                  <h3 className="text-xl font-semibold leading-snug tracking-tight text-slate-900 dark:text-white">
                     {routePoints[activeIndex].label}
                   </h3>
-                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 leading-tight">
+                  <div className="flex min-w-0 items-center gap-2 text-sm leading-tight text-slate-600 dark:text-slate-400">
                     {activeContent.icon === 'route' ? (
                       <Route className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
                     ) : activeContent.icon === 'coast' ? (
@@ -201,7 +206,7 @@ export function VehicleSection() {
                     )}
                     <span>{activeContent.tag}</span>
                   </div>
-                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 md:text-base">
+                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 md:text-base break-words">
                     {activeContent.description}
                   </p>
                 </motion.div>
@@ -213,24 +218,24 @@ export function VehicleSection() {
                   className="mt-0.5 h-5 w-5 shrink-0 stroke-[2] text-sky-600 dark:text-sky-400"
                   aria-hidden
                 />
-                <span className="leading-snug">{activeContent.bullet1}</span>
+                <span className="leading-relaxed break-words">{activeContent.bullet1}</span>
               </li>
               <li className="flex gap-3 items-start">
                 <Repeat
                   className="mt-0.5 h-5 w-5 shrink-0 stroke-[2] text-sky-600 dark:text-sky-400"
                   aria-hidden
                 />
-                <span className="leading-snug">{activeContent.bullet2}</span>
+                <span className="leading-relaxed break-words">{activeContent.bullet2}</span>
               </li>
               <li className="flex gap-3 items-start">
                 <MapPin
                   className="mt-0.5 h-5 w-5 shrink-0 stroke-[2] text-sky-600 dark:text-sky-400"
                   aria-hidden
                 />
-                <span className="leading-snug">{activeContent.bullet3}</span>
+                <span className="leading-relaxed break-words">{activeContent.bullet3}</span>
               </li>
             </ul>
-          </div>
+          </motion.div>
         </div>
 
         {/* Visibility storytelling — part of Parcours, not a separate nav item */}
@@ -238,15 +243,15 @@ export function VehicleSection() {
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
             {t.parcours.visibilityBlockTitle}
           </h3>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 md:text-base">
+          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:text-base break-words">
             {t.parcours.visibilityIntro}
           </p>
           {t.parcours.visibilityIntro2 ? (
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 md:text-base">
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:text-base break-words">
               {t.parcours.visibilityIntro2}
             </p>
           ) : null}
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/90 px-6 py-6 dark:border-slate-700 dark:bg-slate-800/60">
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-100/80 px-6 py-6 dark:border-slate-700 dark:bg-slate-800/70">
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {t.parcours.visibilitySummary}
             </p>
@@ -267,7 +272,7 @@ export function VehicleSection() {
                 return (
                   <div
                     key={parsed.package}
-                    className="rounded-xl border border-slate-200/80 bg-white/40 p-4 dark:border-slate-700/60 dark:bg-slate-900/20"
+                    className="rounded-xl border border-slate-200/90 bg-white/75 p-4 dark:border-slate-600/70 dark:bg-slate-700/30"
                   >
                     <p className="text-sm font-semibold tracking-tight text-slate-900 dark:text-white">
                       {parsed.package}

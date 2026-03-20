@@ -11,7 +11,7 @@ export const locations = {
 } as const;
 
 export const nav = {
-  support: 'Fonctionnement',
+  support: 'Processus',
   parcours: 'Parcours',
   offres: 'Offres',
   contact: 'Contact',
@@ -20,7 +20,7 @@ export const nav = {
 
 export const footer = {
   links: {
-    support: 'Fonctionnement',
+    support: 'Processus',
     parcours: 'Parcours',
     offres: 'Offres',
     contact: 'Contact',
@@ -28,7 +28,7 @@ export const footer = {
   positioning: 'Publicité mobile locale entre Montpellier et le littoral.',
   tagline:
     'Publicité mobile Montpellier & Littoral — Carnon, Palavas, La Grande-Motte, Port Marianne.',
-  copyright: '© ADMOVE',
+  copyright: '© Skalevskyi publicité mobile',
 } as const;
 
 export const floating = {
@@ -37,7 +37,7 @@ export const floating = {
 
 export const mobileNav = {
   home: 'Accueil',
-  support: 'Fonctionnement',
+  support: 'Processus',
   parcours: 'Parcours',
   offres: 'Offres',
   contact: 'Contact',

@@ -72,6 +72,7 @@ Implementation: Apply Manrope globally (e.g. via Next.js font loader or CSS); us
 - One clear hierarchy: single H1 per page, consistent H2 style for sections.
 - Prefer short lines for headlines; body text in readable column width (e.g. `max-w-2xl`–`max-w-3xl`).
 - No decorative fonts; keep a single sans family (Manrope + system fallback) across the landing.
+- Localization typography rule: ensure the Manrope font loader includes the **Cyrillic** subset so UA Cyrillic text does not trigger fallback font metrics.
 
 ---
 
@@ -167,7 +168,7 @@ Avoid mixing many radius sizes; stick to `lg` and `xl` for most UI.
 
 - **Formats / package cards:** `grid gap-6 md:grid-cols-3` (three columns on desktop).
 - **Two-column (e.g. Parcours):** `grid gap-12 md:grid-cols-2 md:items-center`.
-- **Mobile:** single column; fixed bottom navigation bar with outline icons (support, Parcours, Offres, Contact). Add bottom padding to main content so the bar does not cover it. Floating action: **scroll-to-top only** (no floating contact button), above the bottom nav when visible. **Mobile bottom nav surface:** floating pill style — **background** `bg-white/80` (light) and `dark:bg-slate-900/80` (dark) for slight transparency; **blur** `backdrop-blur-md`; border, rounded corners (e.g. `rounded-3xl`), subtle shadow; safe-area respected. Active nav item highlighted by color after client mount (hydration-safe).
+- **Mobile:** single column; fixed bottom navigation bar with outline icons (support, Parcours, Offres, Contact). Add bottom padding to main content so the bar does not cover it. Floating action: **scroll-to-top only** (no floating contact button), above the bottom nav when visible. **Mobile bottom nav surface:** floating pill style — **background** `bg-white/80` (light) and `dark:bg-slate-900/80` (dark) for slight transparency; **blur** `backdrop-blur-md`; border, rounded corners (e.g. `rounded-3xl`), subtle shadow; safe-area respected. Active nav item highlighted by color after client mount (hydration-safe). **Interaction rule:** active switch should be discrete (old releases, new presses) with no shared sliding background transfer and no width/padding/radius morph between items.
 
 ### Navbar
 
@@ -192,6 +193,7 @@ Avoid mixing many radius sizes; stick to `lg` and `xl` for most UI.
 - **Stagger:** For lists or cards, stagger children by 0.06–0.08s; avoid long cascades.
 - **Viewport:** Prefer `whileInView` with `viewport={{ once: true, margin: '-60px' }}` so animations run once when section enters view.
 - **No:** Animation on every hover except where needed for primary CTAs.
+- Motion identity rule: in animated lists, the React `key` must be stable across locales. Do not derive `key` from locale-visible text (e.g. step titles); use indices/ids.
 - **Reduced motion:** Respect `prefers-reduced-motion` (disable or simplify animations when set).
 - **Hero image rotation:** If the hero uses automatic rotation between vehicle visuals, keep it minimal, slow, and non-distracting. Transitions must remain premium and subtle (e.g. fade + slight scale). Use indicator-based controls only; no arrows, no swipe-heavy behavior, no flashy carousel patterns.
 - **Route-based UI (Parcours):** Route timeline uses **live progress visualization**: three marker/segment states — **ACTIVE** (current point, strongest), **FILLED** (path covered in current direction, medium contrast), **MUTED** (not yet covered, light). On forward motion the path fills progressively top to bottom; on backward motion it fades progressively bottom to top (ping-pong). No visited-history; visuals reflect current direction only. Right column is **semi-static**: location title and short description (plus a compact icon/tag row) are dynamic per active point; the **three bullets are semi-dynamic** (change with the active route point), and the previously repeated small note under the bullet list is **not shown** in the current UI. A subtle timeline hint under the left route module explains that clicking a route point pauses viewing and reveals its visibility context. Dynamic part transitions with Framer Motion + AnimatePresence use **opacity-only** swaps (no translate) and must respect prefers-reduced-motion. Route must remain **schematic** (timeline, dots, line), not map-like. No real map UI in the current phase. Right-column bullet icons are slightly larger (e.g. h-5 w-5) for clearer row rhythm. Visibility estimation block: refined typography and spacing; title e.g. “Estimation de la visibilité”; examples use product names BASIC / PRO / EXCLUSIVE with localized placement in parentheses. Motion must stay subtle and purposeful; premium, minimal, calm.

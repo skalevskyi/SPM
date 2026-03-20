@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ADMOVE brand — adjust as needed
-        admove: {
+        // SPM brand — adjust as needed
+        spm: {
           primary: '#0f172a',
           accent: '#0ea5e9',
           muted: '#64748b',

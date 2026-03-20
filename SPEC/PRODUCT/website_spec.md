@@ -1,4 +1,4 @@
-# Website Specification — ADMOVE Landing Page
+# Website Specification — SPM Landing Page
 
 B2B landing page structure. Goal: generate advertising leads.
 
@@ -10,14 +10,14 @@ B2B landing page structure. Goal: generate advertising leads.
 
 ### 1. Navbar
 
-- Logo / ADMOVE name.
+- Logo / SPM name.
 - Navigation links: **Le média** (or “Le média mobile”), Parcours, Offres, Contact.
 - Language switcher and theme toggle.
 - CTA or scroll to contact where appropriate.
 
 ### 2. Hero
 
-- Headline presenting ADMOVE (mobile advertising in Montpellier / Littoral). **Hero headline **MUST** contain the phrase “publicité mobile Montpellier”** (or equivalent per locale) for SEO.
+- Headline presenting SPM (mobile advertising in Montpellier / Littoral). **Hero headline **MUST** contain the phrase “publicité mobile Montpellier”** (or equivalent per locale) for SEO.
 - **Supporting line** — short value proposition.
 - **Trust line** — explains: visibility estimation, Rear / Side / Full formats, possibility to request a quote.
 - Primary CTA (e.g. contact or quote request); secondary CTA (e.g. view offers).

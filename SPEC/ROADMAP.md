@@ -31,7 +31,11 @@
 - ✓ Favicon / app icon metadata; brand asset integration
 - ✓ Localization: **FR-first, section-based** under `src/i18n/locales/{fr,en,ua}`; custom LanguageContext; whole-locale fallback; TranslationKeys from FR; curated place names (FR/EN/UA); Manrope typography; UTF-8 clean
 - ✓ Mobile navigation hydration stability fix (mounted guard; no SSR/client active-state mismatch)
-- ⬜ Minor visual polish (if any)
+- ✓ UA typography stability on mobile (Manrope Cyrillic subset to prevent font fallback)
+- ✓ Support section rendering consistency (locale switching does not leave animated steps hidden/partial)
+- ✓ Mobile hero vertical rhythm tuning (reduced perceived drift for long UA copy)
+- ✓ Mobile bottom nav active shell parity (clearer visual shell without layout shift)
+- ✓ Mobile bottom nav discrete active switching (no shared sliding transfer between items)
 - ⬜ Final QA
 
 ## Phase 2B — Functionality

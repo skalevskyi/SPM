@@ -1,4 +1,4 @@
-# Client Profiles — ADMOVE
+# Client Profiles — SPM
 
 Ideal client segments for mobile advertising in Montpellier and the Littoral.
 

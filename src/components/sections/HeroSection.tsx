@@ -50,7 +50,7 @@ function RouteHint() {
 }
 
 const focusRing =
-  'focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900';
+  'focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70';
 
 export function HeroSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -89,15 +89,15 @@ export function HeroSection() {
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 md:grid-cols-2 md:gap-16 lg:gap-20 lg:items-center">
           {/* Copy */}
-          <div className="flex flex-col justify-center space-y-6">
+          <div className="flex min-w-0 flex-col justify-center space-y-4 md:space-y-6">
             <motion.h1
-              className="max-w-3xl text-4xl font-bold tracking-tight text-slate-900 dark:text-white md:text-6xl leading-tight"
+              className="max-w-3xl break-words text-4xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white md:text-6xl"
               {...motionOpts}
             >
               {t.hero.headline}
             </motion.h1>
             <motion.p
-              className="max-w-2xl text-lg text-slate-600 dark:text-slate-300"
+              className="max-w-2xl break-words text-lg leading-relaxed text-slate-600 dark:text-slate-300"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.08 }}
@@ -105,7 +105,7 @@ export function HeroSection() {
               {t.hero.subheadline}
             </motion.p>
             <motion.p
-              className="text-2xl font-semibold text-slate-900 dark:text-white"
+              className="max-w-2xl break-words text-2xl font-semibold leading-relaxed text-slate-900 dark:text-white"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.1 }}
@@ -113,7 +113,7 @@ export function HeroSection() {
               {t.hero.scale}
             </motion.p>
             <motion.p
-              className="text-sm text-slate-500 dark:text-slate-400"
+              className="max-w-2xl break-words text-sm leading-relaxed text-slate-500 dark:text-slate-400"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.12 }}
@@ -121,7 +121,7 @@ export function HeroSection() {
               {t.hero.route}
             </motion.p>
             <motion.p
-              className="text-sm text-slate-600 dark:text-slate-300"
+              className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.14 }}
@@ -129,20 +129,20 @@ export function HeroSection() {
               {t.hero.trust}
             </motion.p>
             <motion.div
-              className="flex flex-col gap-3 sm:flex-row"
+              className="flex flex-col gap-2.5 sm:flex-row"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.16 }}
             >
               <a
                 href="#contact"
-                className={`inline-block min-w-0 flex-1 rounded-lg bg-slate-900 px-6 py-3 text-center text-base font-medium text-white transition hover:bg-slate-800 dark:bg-sky-600 dark:hover:bg-sky-500 ${focusRing}`}
+                className={`inline-block min-w-0 flex-1 rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 px-6 py-3 text-center text-base font-medium text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
               >
                 {t.hero.ctaPrimary}
               </a>
               <a
                 href="#parcours"
-                className={`inline-block min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-6 py-3 text-center text-base font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800 ${focusRing}`}
+                className={`inline-block min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-6 py-3 text-center text-base font-medium text-slate-700 transition-colors duration-150 ease-out hover:bg-slate-50 active:bg-slate-100 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:active:bg-slate-800 ${focusRing}`}
               >
                 {t.hero.ctaSecondary}
               </a>
@@ -196,10 +196,10 @@ export function HeroSection() {
                   aria-label={`${t.hero.carouselImage} ${i + 1}`}
                   aria-selected={currentImageIndex === i}
                   onClick={() => setCurrentImageIndex(i)}
-                  className={`rounded-full transition-all duration-300 ${focusRing} ${
+                  className={`rounded-full transition-colors duration-150 ease-out ${focusRing} ${
                     currentImageIndex === i
                       ? 'h-2 w-6 bg-slate-600 dark:bg-slate-200'
-                      : 'h-2 w-2 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500'
+                      : 'h-2 w-2 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 active:bg-slate-500 dark:hover:bg-slate-500 dark:active:bg-slate-400'
                   }`}
                 />
               ))}

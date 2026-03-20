@@ -7,7 +7,7 @@ import { BASE_PATH } from '@/lib/base-path';
 import './globals.css';
 
 const manrope = Manrope({
-  subsets: ['latin'],
+  subsets: ['latin', 'cyrillic'],
   display: 'swap',
   variable: '--font-manrope',
 });
