@@ -424,11 +424,6 @@ export function ContactSection() {
                     reducedMotion={reducedMotion}
                   />
                 </div>
-                <div className="space-y-1 border-t border-slate-200/80 pt-4 text-center text-sm leading-relaxed text-slate-500 dark:border-slate-700/80 dark:text-slate-400">
-                  <p>{t.contact.reassurance.responseTimeShort}</p>
-                  <p>{t.contact.reassurance.noCommitment}</p>
-                  <p>{t.contact.reassurance.privacy}</p>
-                </div>
                 <button
                   type="submit"
                   disabled={status === 'loading'}
@@ -447,6 +442,9 @@ export function ContactSection() {
                     t.contact.submit
                   )}
                 </button>
+                <p className="mt-3 text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                  {t.contact.reassurance}
+                </p>
               </motion.div>
             </form>
           )}

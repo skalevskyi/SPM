@@ -16,11 +16,7 @@ export const contact = {
   placeholderEmail: 'email@exemple.fr',
   placeholderPhone: '06 00 00 00 00',
   placeholderMessage: 'Votre message ou demande de devis...',
-  reassurance: {
-    responseTimeShort: 'Réponse sous 24h',
-    noCommitment: 'Sans engagement',
-    privacy: 'Vos données restent confidentielles',
-  },
+  reassurance: 'Sans engagement. Vos données restent confidentielles.',
   submit: 'Demander votre estimation',
   submitLoading: 'Envoi en cours…',
   submitSuccess: 'Merci. Votre demande a bien été envoyée.',

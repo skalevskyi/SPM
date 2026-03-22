@@ -16,11 +16,7 @@ export const contact = {
   placeholderEmail: 'email@example.com',
   placeholderPhone: '+33 6 00 00 00 00',
   placeholderMessage: 'Ваше повідомлення або запит пропозиції...',
-  reassurance: {
-    responseTimeShort: 'Відповідь протягом 24 год',
-    noCommitment: 'Без зобов’язань',
-    privacy: 'Ваші дані залишаються конфіденційними',
-  },
+  reassurance: 'Без зобов’язань. Ваші дані конфіденційні.',
   submit: 'Запросити оцінку',
   submitLoading: 'Надсилання…',
   submitSuccess: 'Дякуємо. Ваш запит надіслано.',

@@ -16,11 +16,7 @@ export const contact = {
   placeholderEmail: 'email@example.com',
   placeholderPhone: '+33 6 00 00 00 00',
   placeholderMessage: 'Your message or quote request...',
-  reassurance: {
-    responseTimeShort: 'Response within 24h',
-    noCommitment: 'No commitment',
-    privacy: 'Your data stays confidential',
-  },
+  reassurance: 'No commitment. Your data remains confidential.',
   submit: 'Request your estimate',
   submitLoading: 'Sending…',
   submitSuccess: 'Thank you. Your request has been sent.',
