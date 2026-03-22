@@ -22,6 +22,54 @@ function isValidEmailForAutoReply(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }
 
+/** Masks local part for logs — keeps domain visible for debugging. */
+function maskEmailForLog(email: string): string {
+  const t = email.trim();
+  if (!t) {
+    return '(empty)';
+  }
+  const at = t.indexOf('@');
+  if (at <= 0) {
+    return '(invalid)';
+  }
+  const local = t.slice(0, at);
+  const domain = t.slice(at + 1);
+  const localMasked =
+    local.length <= 1
+      ? `${local}***`
+      : `${local[0]}***${local.slice(-1)}`;
+  return `${localMasked}@${domain}`;
+}
+
+/** Safe Resend error summary — no full payload. */
+function formatResendErrorForAutoReply(error: unknown): string {
+  if (error == null) {
+    return 'unknown';
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (typeof error === 'object') {
+    const o = error as Record<string, unknown>;
+    const parts: string[] = [];
+    if (typeof o.name === 'string') {
+      parts.push(`name=${o.name}`);
+    }
+    if (typeof o.message === 'string') {
+      parts.push(`message=${o.message}`);
+    }
+    if (typeof o.statusCode === 'number') {
+      parts.push(`statusCode=${String(o.statusCode)}`);
+    }
+    const code = o.code;
+    if (typeof code === 'string' || typeof code === 'number') {
+      parts.push(`code=${String(code)}`);
+    }
+    return parts.length > 0 ? parts.join(' | ') : 'unrecognized_error';
+  }
+  return String(error);
+}
+
 function getAutoReplyCopy(
   locale: LeadLocale,
   safeName: string,
@@ -177,6 +225,10 @@ export async function sendLeadNotification(lead: Lead): Promise<void> {
 export async function sendLeadAutoReply(lead: Lead): Promise<void> {
   const email = lead.email.trim();
   if (!email || !isValidEmailForAutoReply(email)) {
+    console.warn('Auto-reply skipped: invalid recipient email', {
+      recipient: maskEmailForLog(lead.email),
+      locale: lead.locale,
+    });
     return;
   }
 
@@ -202,6 +254,7 @@ export async function sendLeadAutoReply(lead: Lead): Promise<void> {
   });
 
   if (error) {
-    throw new Error('resend_send_failed');
+    const detail = formatResendErrorForAutoReply(error);
+    throw new Error(`auto_reply_resend_failed: ${detail}`);
   }
 }

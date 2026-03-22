@@ -10,6 +10,11 @@ export async function sendLead(lead: Lead): Promise<void> {
   try {
     await sendLeadAutoReply(lead);
   } catch (error) {
-    console.error('Auto-reply failed', error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Auto-reply failed', {
+      message,
+      ...(error instanceof Error && error.cause !== undefined ? { cause: error.cause } : {}),
+      error,
+    });
   }
 }
