@@ -16,15 +16,25 @@ export const contact = {
   placeholderEmail: 'email@example.com',
   placeholderPhone: '+33 6 00 00 00 00',
   placeholderMessage: 'Your message or quote request...',
-  reassurance:
-    'No commitment. Your estimate is confirmed after a short exchange. No spam.',
+  reassurance: {
+    responseTimeShort: 'Response within 24h',
+    noCommitment: 'No commitment',
+    privacy: 'Your data stays confidential',
+  },
   submit: 'Request your estimate',
   submitLoading: 'Sending…',
   submitSuccess: 'Thank you. Your request has been sent.',
   submitError: 'Something went wrong. Please try again.',
   validation: {
-    name: 'Enter a name with at least 2 characters.',
-    email: 'Enter a valid email address.',
-    message: 'Enter a message with at least 5 characters.',
+    required: 'This field is required',
+    invalid: 'Invalid format',
+    tooLong: 'Text is too long',
+  },
+  success: {
+    title: 'Request sent',
+    description: 'Thank you — we have received your request.',
+    responseTime: 'We will get back to you within 24 hours.',
+    reassurance: 'No commitment. Your data is never shared.',
+    resetButton: 'Send another request',
   },
 } as const;
