@@ -5,7 +5,9 @@ import { Camera, CheckCircle2, Eye, Play, Shield } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import { InfoIconTooltip } from '@/components/ui/Tooltip';
+import { useCalculatorContactPrefill } from '@/context/CalculatorContactPrefillContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { buildCalculatorContactPayload } from '@/lib/contactPrefillMessage';
 import { ADDON_PRICES, BASE_MONTHLY_MEDIA_EUR } from '@/lib/calculator/config';
 import type { AddonEligibility } from '@/lib/calculator/types';
 import type { AddonId, CalculatorResult, DisplayMode, DurationMonths, PackageId } from '@/lib/calculator/types';
@@ -112,6 +114,20 @@ function labelForAddon(addon: AddonEligibility, t: ReturnType<typeof useLanguage
 
 function formatAddonPriceMo(amount: number, t: ReturnType<typeof useLanguage>['t']): string {
   return t.offres.calculatorAddonPriceFormat.replace('{amount}', String(Math.round(amount)));
+}
+
+function contactsRangeLine(
+  packageId: PackageId,
+  t: ReturnType<typeof useLanguage>['t'],
+): string {
+  switch (packageId) {
+    case 'BASIC':
+      return t.offres.calculatorContactsRangeBasic;
+    case 'PRO':
+      return t.offres.calculatorContactsRangePro;
+    case 'EXCLUSIVE':
+      return t.offres.calculatorContactsRangeExclusive;
+  }
 }
 
 function addonPillIcon(addonId: AddonId): LucideIcon {
@@ -295,6 +311,7 @@ function addonLadderRow(
 
 export function OfferCalculatorPanel(props: Props) {
   const { t } = useLanguage();
+  const { setPayload: setContactPrefillPayload } = useCalculatorContactPrefill();
   const {
     packageId,
     durationMonths,
@@ -308,6 +325,14 @@ export function OfferCalculatorPanel(props: Props) {
     packageFeatured,
     formatEur,
   } = props;
+
+  const handleContactNavClick = () => {
+    if (result.ok) {
+      setContactPrefillPayload(
+        buildCalculatorContactPayload(result, displayMode, packageId, durationMonths),
+      );
+    }
+  };
 
   if (!result.ok) {
     return (
@@ -330,6 +355,7 @@ export function OfferCalculatorPanel(props: Props) {
         </p>
         <a
           href="#contact"
+          onClick={handleContactNavClick}
           className={`mt-4 block w-full rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 px-4 py-2.5 text-center text-sm font-medium text-white shadow-sm shadow-sky-950/10 transition-[transform,opacity] duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 active:translate-y-px active:opacity-[0.97] dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:shadow-none dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
         >
           {t.offres.ctaEstimation}
@@ -338,8 +364,7 @@ export function OfferCalculatorPanel(props: Props) {
     );
   }
 
-  const { addOnEligibility, monthlyView, contractTotalView, indicativeMonthlyContacts, durationMultiplier } =
-    result;
+  const { addOnEligibility, monthlyView, contractTotalView, durationMultiplier } = result;
 
   const avgMonthlyRounded = Math.round(
     contractTotalView.contractTotalEur / durationMonths,
@@ -438,10 +463,10 @@ export function OfferCalculatorPanel(props: Props) {
             ) : null}
             <div className="mt-2 border-t border-slate-100 pt-2 dark:border-slate-700/40 md:mt-2 md:pt-2">
               <p className="text-sm font-medium tabular-nums tracking-tight text-slate-600 dark:text-slate-300 md:text-base">
-                {indicativeMonthlyContacts.toLocaleString()}
+                {contactsRangeLine(packageId, t)}
               </p>
-              <p className="mt-0 text-[11px] font-medium text-slate-500 dark:text-slate-400 md:text-xs">
-                {t.offres.calculatorContactsLabel}
+              <p className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-400 md:text-xs">
+                {t.offres.calculatorContactsEstimateCaption}
               </p>
             </div>
           </div>
@@ -753,6 +778,7 @@ export function OfferCalculatorPanel(props: Props) {
 
           <a
             href="#contact"
+            onClick={handleContactNavClick}
             className={`mt-2 block w-full flex-shrink-0 rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 px-4 py-2.5 text-center text-sm font-medium text-white shadow-sm shadow-sky-950/10 transition-[transform,opacity] duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 active:translate-y-px active:opacity-[0.97] dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:shadow-none dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 md:mt-2 ${focusRing}`}
           >
             {t.offres.ctaEstimation}

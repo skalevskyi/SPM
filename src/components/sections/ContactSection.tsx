@@ -1,9 +1,11 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+import { useCalculatorContactPrefill } from '@/context/CalculatorContactPrefillContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { buildContactPrefillMessage } from '@/lib/contactPrefillMessage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { LeadApiResponse } from '@/lib/lead/types';
 
@@ -100,8 +102,22 @@ function FieldError({ id, message, reducedMotion }: FieldErrorProps) {
 export function ContactSection() {
   const reducedMotion = useReducedMotion();
   const { t, locale } = useLanguage();
+  const {
+    payload: calculatorPrefillPayload,
+    setPayload: setCalculatorPrefillPayload,
+  } = useCalculatorContactPrefill();
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (!calculatorPrefillPayload) return;
+    setMessage((prev) => {
+      if (prev.trim() !== '') return prev;
+      return buildContactPrefillMessage(t, calculatorPrefillPayload, locale);
+    });
+    setCalculatorPrefillPayload(null);
+  }, [calculatorPrefillPayload, locale, setCalculatorPrefillPayload, t]);
 
   const messageForCode = useCallback(
     (code: string) => {
@@ -132,6 +148,7 @@ export function ContactSection() {
   function handleResetSuccess() {
     setFieldErrors({});
     setStatus('idle');
+    setMessage('');
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -179,6 +196,7 @@ export function ContactSection() {
       }
 
       form.reset();
+      setMessage('');
       setStatus('success');
     } catch {
       setStatus('error');
@@ -403,9 +421,13 @@ export function ContactSection() {
                     id="contact-message"
                     name="message"
                     rows={4}
+                    value={message}
                     aria-invalid={Boolean(fieldErrors.message)}
                     aria-describedby={fieldErrors.message ? 'contact-message-error' : undefined}
-                    onChange={() => clearFieldError('message')}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                      clearFieldError('message');
+                    }}
                     onBlur={(e) => {
                       const err = validateMessageBlur(e.target.value);
                       setFieldErrors((p) => {

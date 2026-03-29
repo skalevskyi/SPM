@@ -33,4 +33,7 @@ export const contact = {
     reassurance: 'Без зобов’язань. Ваші дані нікому не передаються.',
     resetButton: 'Надіслати ще один запит',
   },
+  prefillMessageTemplate:
+    'Добрий день,\n\nМене цікавить розміщення реклами:\n\nПакет: {package}\nФормат оплати: {billing}\nТривалість: {duration}\nОбрані опції:\n{addons}\n\nЗагальна вартість: {total}\n\nПрошу зв’язатися зі мною для узгодження деталей.',
+  prefillNoAddons: 'без додаткових опцій',
 } as const;

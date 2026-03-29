@@ -84,8 +84,10 @@ export const parcours = {
   visibilityIntro2: '',
   visibilityBlockTitle: 'Visibility estimation on this route',
   visibilitySummary: 'Indicative examples by format',
-  visibilityRear: 'BASIC (rear) — ~1,000/day (indicative), ~30,000/month',
-  visibilitySide: 'PRO (side panels) — ~1,500/day (indicative), ~45,000/month',
-  visibilityFull: 'EXCLUSIVE (full vehicle wrap) — ~2,000/day (indicative), ~60,000/month',
+  visibilityRear: 'BASIC (rear) — Range · 60,000 – 100,000 / month',
+  visibilitySide: 'PRO (side panels) — Range · 100,000 – 150,000 / month',
+  visibilityFull: 'EXCLUSIVE (full vehicle wrap) — Range · 130,000 – 200,000 / month',
+  visibilityCaption:
+    'Indicative estimate depending on format, route and traffic conditions',
   visibilityIndicative: '· indicative visibility',
 } as const;

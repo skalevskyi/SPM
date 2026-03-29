@@ -113,18 +113,18 @@ export function HeroSection() {
               {t.hero.scale}
             </motion.p>
             <motion.p
-              className="max-w-2xl break-words text-sm leading-relaxed text-slate-500 dark:text-slate-400"
+              className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.12 }}
+              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.11 }}
             >
-              {t.hero.route}
+              {t.hero.scaleSupporting}
             </motion.p>
             <motion.p
               className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300"
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.14 }}
+              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.12 }}
             >
               {t.hero.trust}
             </motion.p>

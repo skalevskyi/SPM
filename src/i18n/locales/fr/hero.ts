@@ -7,9 +7,9 @@ export const hero = {
     'Publicité mobile à Montpellier pour une visibilité locale réelle',
   subheadline:
     'Un véhicule publicitaire circule chaque jour sur un parcours hebdomadaire fixe entre Montpellier et La Grande-Motte, pour une visibilité locale régulière dans les flux du quotidien.',
-  scale: 'Jusqu’à 60 000 contacts locaux par mois',
-  route:
-    'Parcours régulier entre Montpellier et La Grande-Motte, via Pérols, Carnon, Palavas et Port Marianne.',
+  scale: 'Jusqu’à 200 000 contacts locaux par mois',
+  scaleSupporting:
+    'Nous générons entre 60 000 et 150 000 contacts par mois selon le format et le parcours. Dans des conditions optimales — jusqu’à 200 000.',
   trust: 'Pour commerces et professionnels locaux',
   ctaPrimary: 'Demander une estimation',
   ctaSecondary: 'Voir le parcours',

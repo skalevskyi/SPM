@@ -84,9 +84,11 @@ export const parcours = {
   visibilityIntro2: '',
   visibilityBlockTitle: 'Оцінка видимості на цьому маршруті',
   visibilitySummary: 'Орієнтовні приклади за форматом',
-  visibilityRear: 'BASIC (задня частина) — ~1 000/день (орієнтовно), ~30 000/міс',
-  visibilitySide: 'PRO (бокові панелі) — ~1 500/день (орієнтовно), ~45 000/міс',
+  visibilityRear: 'BASIC (задня частина) — Діапазон · 60 000 – 100 000 / міс',
+  visibilitySide: 'PRO (бокові панелі) — Діапазон · 100 000 – 150 000 / міс',
   visibilityFull:
-    'EXCLUSIVE (повне брендування авто) — ~2 000/день (орієнтовно), ~60 000/міс',
+    'EXCLUSIVE (повне брендування авто) — Діапазон · 130 000 – 200 000 / міс',
+  visibilityCaption:
+    'Індикативна оцінка залежно від формату, маршруту та умов трафіку',
   visibilityIndicative: '· орієнтовна видимість',
 } as const;

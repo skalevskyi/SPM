@@ -85,9 +85,10 @@ export const parcours = {
     'Estimations basées sur les flux locaux et la répétition quotidienne.',
   visibilityIntro2: '',
   visibilitySummary: 'Exemples indicatifs par format',
-  visibilityRear: 'BASIC (arrière) — ~1 000 / jour (indicatif), ~30 000 / mois',
-  visibilitySide: 'PRO (latéral) — ~1 500 / jour (indicatif), ~45 000 / mois',
-  visibilityFull:
-    'EXCLUSIVE (habillage complet) — ~2 000 / jour (indicatif), ~60 000 / mois',
+  visibilityRear: 'BASIC (arrière) — Fourchette · 60 000 – 100 000 / mois',
+  visibilitySide: 'PRO (latéral) — Fourchette · 100 000 – 150 000 / mois',
+  visibilityFull: 'EXCLUSIVE (habillage complet) — Fourchette · 130 000 – 200 000 / mois',
+  visibilityCaption:
+    'Estimation indicative selon le format, le parcours et les conditions de trafic',
   visibilityIndicative: '· visibilité indicative',
 } as const;

@@ -12,15 +12,16 @@ export const offres = {
   positioningRear: 'Local presence',
   positioningSide: 'Reinforced visibility',
   positioningFull: 'Max impact',
-  descriptionRear: 'A simple, direct format to start your first local campaign.',
+  descriptionRear: 'Visibility in daily local traffic',
   descriptionSide:
-    'The most balanced option for stronger side visibility and more memorable messaging.',
-  descriptionFull: 'The most visible coverage for dominant brand presence along the route.',
+    'Best balance between visibility and recall',
+  descriptionFull:
+    'Brand dominance along the route. Single brand visibility on the route.',
   noteRear:
     'May coexist with another brand on a different vehicle zone if there is no direct market competition.',
   noteSide:
     'Can be combined with another campaign depending on sector compatibility.',
-  noteFull: 'Exclusive format — one advertiser occupies the entire vehicle.',
+  noteFull: 'Single brand visibility on the route',
   benefitsRear: [
     'Daily visibility in local traffic',
     'Simple, direct format',
@@ -55,7 +56,7 @@ export const offres = {
   simObjectiveValue: 'Local visibility',
   simDisclaimer:
     'No commitment: after your request, our team confirms the estimate that fits your goals.',
-  ctaEstimation: 'Request your estimate',
+  ctaEstimation: 'Schedule a meeting',
   altRear: 'BASIC — local presence on an SPM vehicle',
   altSide: 'PRO — reinforced visibility on an SPM vehicle',
   altFull: 'EXCLUSIVE — max impact on an SPM vehicle',
@@ -81,6 +82,11 @@ export const offres = {
   calculatorModeMonthly: 'Monthly',
   calculatorModeContractTotal: 'Contract total',
   calculatorContactsLabel: 'Indicative contacts / month',
+  calculatorContactsRangeBasic: '60,000 – 100,000 contacts / month',
+  calculatorContactsRangePro: '100,000 – 150,000 contacts / month',
+  calculatorContactsRangeExclusive: '130,000 – 200,000 contacts / month',
+  calculatorContactsEstimateCaption:
+    'Estimate based on real traffic and route conditions',
   calculatorFromMonth2Label: 'From month 2',
   calculatorMonth1Label: 'Month 1',
   calculatorContractTotalLabel: 'Contract total',

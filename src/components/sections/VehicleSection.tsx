@@ -329,6 +329,9 @@ export function VehicleSection() {
                 );
               })}
             </div>
+            <p className="mt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              {t.parcours.visibilityCaption}
+            </p>
           </div>
         </div>
       </div>

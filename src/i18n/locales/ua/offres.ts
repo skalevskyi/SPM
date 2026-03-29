@@ -12,16 +12,16 @@ export const offres = {
   positioningRear: 'Локальна присутність',
   positioningSide: 'Підсилена видимість',
   positioningFull: 'Максимальний вплив',
-  descriptionRear: 'Щоденна присутність для старту першої локальної кампанії.',
+  descriptionRear: 'Видимість у щоденному локальному трафіку',
   descriptionSide:
-    'Найбільш збалансований формат для сильнішої бічної видимості та запам’ятовуваних повідомлень.',
+    'Найкращий баланс видимості та запам’ятовування',
   descriptionFull:
-    'Найбільш помітне покриття для домінуючого бренду на маршруті.',
+    'Домінування бренду на маршруті. Єдиний бренд у видимості.',
   noteRear:
     'Може співіснувати з іншим брендом на іншій зоні автомобіля за відсутності прямої конкуренції.',
   noteSide:
     'Може поєднуватися з іншою кампанією залежно від сумісності секторів.',
-  noteFull: 'Ексклюзивний формат — один рекламодавець займає весь автомобіль.',
+  noteFull: 'Єдиний бренд у видимості',
   benefitsRear: [
     'Щоденна видимість у місцевому трафіку',
     'Простий і прямий формат',
@@ -56,7 +56,7 @@ export const offres = {
   simObjectiveValue: 'Локальна видимість',
   simDisclaimer:
     'Без зобов’язань: після запиту наша команда підтвердить оцінку під ваші цілі.',
-  ctaEstimation: 'Запросити вашу оцінку',
+  ctaEstimation: 'Запланувати зустріч',
   altRear: 'BASIC — локальна присутність на автомобілі SPM',
   altSide: 'PRO — підсилена видимість на автомобілі SPM',
   altFull: 'EXCLUSIVE — максимальний вплив на автомобілі SPM',
@@ -83,6 +83,11 @@ export const offres = {
   calculatorModeMonthly: 'Щомісячно',
   calculatorModeContractTotal: 'Загалом за контрактом',
   calculatorContactsLabel: 'Орієнтовні контакти / міс',
+  calculatorContactsRangeBasic: '60 000 – 100 000 контактів / місяць',
+  calculatorContactsRangePro: '100 000 – 150 000 контактів / місяць',
+  calculatorContactsRangeExclusive: '130 000 – 200 000 контактів / місяць',
+  calculatorContactsEstimateCaption:
+    'Оцінка базується на реальному трафіку та маршруті',
   calculatorFromMonth2Label: 'З місяця 2',
   calculatorMonth1Label: 'Місяць 1',
   calculatorContractTotalLabel: 'Загальна сума за контракт',

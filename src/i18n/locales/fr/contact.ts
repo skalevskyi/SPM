@@ -33,4 +33,8 @@ export const contact = {
     reassurance: 'Sans engagement. Vos données ne sont jamais partagées.',
     resetButton: 'Envoyer une autre demande',
   },
+  /** Calculator → contact prefill ({package}, {billing}, {duration}, {addons}, {total}) */
+  prefillMessageTemplate:
+    'Bonjour,\n\nJe suis intéressé par une campagne publicitaire :\n\nOffre : {package}\nMode de paiement : {billing}\nDurée : {duration}\nOptions sélectionnées :\n{addons}\n\nPrix total : {total}\n\nMerci de me contacter pour convenir des détails.',
+  prefillNoAddons: 'aucune option supplémentaire',
 } as const;

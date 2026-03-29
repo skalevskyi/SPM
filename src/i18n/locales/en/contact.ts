@@ -33,4 +33,7 @@ export const contact = {
     reassurance: 'No commitment. Your data is never shared.',
     resetButton: 'Send another request',
   },
+  prefillMessageTemplate:
+    'Hello,\n\nI am interested in an advertising campaign:\n\nPackage: {package}\nBilling mode: {billing}\nDuration: {duration}\nSelected add-ons:\n{addons}\n\nTotal price: {total}\n\nPlease contact me to discuss the details.',
+  prefillNoAddons: 'no additional add-ons',
 } as const;

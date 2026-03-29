@@ -12,16 +12,16 @@ export const offres = {
   positioningRear: 'Présence locale',
   positioningSide: 'Visibilité renforcée',
   positioningFull: 'Impact maximal',
-  descriptionRear: "Une présence simple et directe pour lancer une première campagne locale.",
+  descriptionRear: 'Visibilité dans le trafic local quotidien',
   descriptionSide:
-    "Le format le plus équilibré pour une visibilité latérale plus forte et mémorisable.",
+    'Meilleur équilibre entre visibilité et mémorisation',
   descriptionFull:
-    "L’habillage le plus visible pour une image de marque dominante sur le parcours.",
+    'Domination de la marque sur le parcours. Marque unique visible sur le trajet.',
   noteRear:
     "Peut coexister avec une autre marque sur une autre zone du véhicule en l'absence de concurrence directe.",
   noteSide:
     'Peut être combiné avec une autre campagne selon la compatibilité des secteurs.',
-  noteFull: "Format exclusif — un seul annonceur occupe l'ensemble du véhicule.",
+  noteFull: 'Marque unique visible sur le trajet',
   benefitsRear: [
     'Visibilité quotidienne dans le trafic local',
     'Format simple et direct',
@@ -56,7 +56,7 @@ export const offres = {
   simObjectiveValue: 'Visibilité locale',
   simDisclaimer:
     'Aucun engagement : après votre demande, notre équipe confirme l’estimation adaptée à votre objectif.',
-  ctaEstimation: 'Demander votre estimation',
+  ctaEstimation: 'Planifier un rendez-vous',
   altRear: 'BASIC — présence locale sur véhicule SPM',
   altSide: 'PRO — visibilité renforcée sur véhicule SPM',
   altFull: 'EXCLUSIVE — impact maximal sur véhicule SPM',
@@ -84,6 +84,11 @@ export const offres = {
   calculatorModeMonthly: 'Mensuel',
   calculatorModeContractTotal: 'Total contrat',
   calculatorContactsLabel: 'Contacts indicatifs / mois',
+  calculatorContactsRangeBasic: '60 000 – 100 000 contacts / mois',
+  calculatorContactsRangePro: '100 000 – 150 000 contacts / mois',
+  calculatorContactsRangeExclusive: '130 000 – 200 000 contacts / mois',
+  calculatorContactsEstimateCaption:
+    'Estimation basée sur le trafic réel et le parcours',
   calculatorFromMonth2Label: 'À partir du mois 2',
   calculatorMonth1Label: 'Mois 1',
   calculatorContractTotalLabel: 'Total du contrat',
