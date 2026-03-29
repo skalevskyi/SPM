@@ -5,11 +5,12 @@
 export const parcours = {
   title: 'Route & Visibility Zones',
   subtitle:
-    'Daily presence on high-traffic routes between Montpellier and the coast.',
+    'Daily presence on a route between Montpellier and La Grande-Motte, with regular passages via Pérols, Carnon, Palavas and Port Marianne.',
   timelineHint:
     'Click a route point to pause and view details.',
   descriptors: {
     montpellier: 'urban center',
+    perols: 'outbound corridor',
     portMarianne: 'active district',
     carnon: 'coastal route',
     palavas: 'seafront',
@@ -24,6 +25,15 @@ export const parcours = {
       bullet1: 'Visibility in daily urban traffic flows',
       bullet2: 'Repeated contact with an active local audience',
       bullet3: 'Visible presence in circulation and stopping areas',
+    },
+    perols: {
+      description:
+        'Outbound to the coast: regular pass-by moments and recurring visibility in everyday flows.',
+      tag: 'Outbound corridor',
+      icon: 'district',
+      bullet1: 'Visibility in pass-by moments toward the coast',
+      bullet2: 'Repeated contact during recurring weekday flows',
+      bullet3: 'Good visibility near traffic and stop areas',
     },
     portMarianne: {
       description:
@@ -74,8 +84,8 @@ export const parcours = {
   visibilityIntro2: '',
   visibilityBlockTitle: 'Visibility estimation on this route',
   visibilitySummary: 'Indicative examples by format',
-  visibilityRear: 'BASIC (rear) — ~5,000/day, ~110,000/month',
-  visibilitySide: 'PRO (side panels) — ~7,000/day, ~150,000/month',
-  visibilityFull: 'EXCLUSIVE (full vehicle wrap) — ~9,000/day, ~200,000/month',
+  visibilityRear: 'BASIC (rear) — ~1,000/day (indicative), ~30,000/month',
+  visibilitySide: 'PRO (side panels) — ~1,500/day (indicative), ~45,000/month',
+  visibilityFull: 'EXCLUSIVE (full vehicle wrap) — ~2,000/day (indicative), ~60,000/month',
   visibilityIndicative: '· indicative visibility',
 } as const;

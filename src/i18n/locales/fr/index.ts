@@ -16,6 +16,7 @@ import { support } from './support';
 import { parcours } from './parcours';
 import { offres } from './offres';
 import { contact } from './contact';
+import { tooltips } from './tooltips';
 
 export const fr = {
   locations,
@@ -24,6 +25,7 @@ export const fr = {
   support,
   parcours,
   offres,
+  tooltips,
   contact,
   footer,
   floating,

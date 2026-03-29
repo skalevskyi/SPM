@@ -1,19 +1,35 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Car, MapPin, MousePointerClick, Repeat, Route, Sun } from 'lucide-react';
 
 import { useLanguage } from '@/context/LanguageContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
-const ROUTE_IDS = [
+/** Aller: Montpellier → Port Marianne → Pérols → Carnon → La Grande-Motte */
+const ROUTE_ALLER = [
   'montpellier',
   'portMarianne',
+  'perols',
   'carnon',
-  'palavas',
   'grandeMotte',
 ] as const;
+
+/** Retour: La Grande-Motte → Carnon → Palavas → Port Marianne → Montpellier */
+const ROUTE_RETOUR = [
+  'grandeMotte',
+  'carnon',
+  'palavas',
+  'portMarianne',
+  'montpellier',
+] as const;
+
+type RouteDirection = 'aller' | 'retour';
+
+function getRouteIds(direction: RouteDirection): readonly string[] {
+  return direction === 'aller' ? ROUTE_ALLER : ROUTE_RETOUR;
+}
 
 const ROUTE_AUTOPLAY_MS = 5000;
 const PAUSE_AFTER_CLICK_MS = 5500;
@@ -35,19 +51,34 @@ function parseVisibilityRow(
 }
 
 export function VehicleSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [routeStep, setRouteStep] = useState<{ direction: RouteDirection; index: number }>({
+    direction: 'aller',
+    index: 0,
+  });
   const [pausedUntil, setPausedUntil] = useState<number | null>(null);
-  const directionRef = useRef<1 | -1>(1);
   const reducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  const routePoints = ROUTE_IDS.map((id) => ({
+  const routeIds = getRouteIds(routeStep.direction);
+  const routePoints = routeIds.map((id, logicalIndex) => ({
     id,
-    label: t.locations[id],
-    descriptor: t.parcours.descriptors[id],
+    logicalIndex,
+    label: t.locations[id as keyof typeof t.locations],
+    descriptor: t.parcours.descriptors[id as keyof typeof t.parcours.descriptors],
   }));
-  const activeLocationId = ROUTE_IDS[activeIndex];
+  /** Aller: top→bottom = travel order. Retour: reversed so bottom = journey start (coast), read upward. */
+  const displayRows =
+    routeStep.direction === 'aller' ? routePoints : [...routePoints].reverse();
+  const activeLocationId = routeIds[routeStep.index] as keyof typeof t.parcours.locationContent;
   const activeContent = t.parcours.locationContent[activeLocationId];
+
+  const isSegmentFilled = (displayIdx: number) => {
+    if (routeStep.direction === 'aller') {
+      return displayIdx < routeStep.index;
+    }
+    const lastDisplay = displayRows.length - 1;
+    return routeStep.index >= lastDisplay - displayIdx;
+  };
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -55,25 +86,23 @@ export function VehicleSection() {
       const now = Date.now();
       if (pausedUntil !== null && now < pausedUntil) return;
       if (pausedUntil !== null && now >= pausedUntil) setPausedUntil(null);
-      setActiveIndex((prev) => {
-        const d = directionRef.current;
-        const next = prev + d;
-        if (next >= routePoints.length) {
-          directionRef.current = -1;
-          return routePoints.length - 2;
+      setRouteStep((prev) => {
+        const ids = getRouteIds(prev.direction);
+        const nextIndex = prev.index + 1;
+        if (nextIndex >= ids.length) {
+          return {
+            direction: prev.direction === 'aller' ? 'retour' : 'aller',
+            index: 0,
+          };
         }
-        if (next < 0) {
-          directionRef.current = 1;
-          return 1;
-        }
-        return next;
+        return { direction: prev.direction, index: nextIndex };
       });
     }, ROUTE_AUTOPLAY_MS);
     return () => clearInterval(id);
   }, [pausedUntil, reducedMotion]);
 
-  const handleMarkerClick = (index: number) => {
-    setActiveIndex(index);
+  const handleMarkerClick = (logicalIndex: number) => {
+    setRouteStep((prev) => ({ ...prev, index: logicalIndex }));
     setPausedUntil(Date.now() + PAUSE_AFTER_CLICK_MS);
   };
 
@@ -100,17 +129,22 @@ export function VehicleSection() {
             transition={{ duration: reducedMotion ? 0 : 0.4 }}
           >
             <div className="mx-auto flex w-fit flex-col md:w-full md:max-w-xs">
-              {routePoints.map((point, i) => {
-                const isActive = activeIndex === i;
-                const isFilled = i < activeIndex;
-                const isSegmentFilled =
-                  i < routePoints.length - 1 && i < activeIndex;
+              {displayRows.map((point, displayIdx) => {
+                const isActive = routeStep.index === point.logicalIndex;
+                const isFilled = point.logicalIndex < routeStep.index;
+                const segmentAfterFilled =
+                  displayIdx < displayRows.length - 1 && isSegmentFilled(displayIdx);
+                /** Line only: passed segment = dark; not yet passed = light (same semantics for aller and retour). */
+                const segmentUseLightColor = !segmentAfterFilled;
                 return (
-                  <div key={point.id} className="flex min-w-0 items-start gap-2.5 py-1">
+                  <div
+                    key={`${routeStep.direction}-${point.logicalIndex}-${point.id}`}
+                    className="flex min-w-0 items-start gap-2.5 py-1"
+                  >
                     <div className="flex flex-col items-center">
                       <button
                         type="button"
-                        onClick={() => handleMarkerClick(i)}
+                        onClick={() => handleMarkerClick(point.logicalIndex)}
                         aria-label={`${point.label} — ${point.descriptor}`}
                         aria-current={isActive ? 'true' : undefined}
                         className={`relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors duration-150 ease-out active:bg-slate-100 dark:active:bg-slate-800 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70 ${
@@ -129,12 +163,12 @@ export function VehicleSection() {
                           }`}
                         />
                       </button>
-                      {i < routePoints.length - 1 && (
+                      {displayIdx < displayRows.length - 1 && (
                         <div
                           className={`mx-auto mt-1.5 h-4 w-px flex-shrink-0 transition-colors duration-300 ${
-                            isSegmentFilled
-                              ? 'bg-slate-500 dark:bg-slate-400'
-                              : 'bg-slate-300 dark:bg-slate-600'
+                            segmentUseLightColor
+                              ? 'bg-slate-300 dark:bg-slate-600'
+                              : 'bg-slate-500 dark:bg-slate-400'
                           }`}
                           aria-hidden
                         />
@@ -142,7 +176,7 @@ export function VehicleSection() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleMarkerClick(i)}
+                      onClick={() => handleMarkerClick(point.logicalIndex)}
                       className="min-w-0 -ml-1 rounded px-1 text-left transition-colors duration-150 ease-out active:bg-slate-100 dark:active:bg-slate-800 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
                     >
                       <span
@@ -182,7 +216,7 @@ export function VehicleSection() {
             <div>
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeLocationId}
+                  key={`${routeStep.direction}-${routeStep.index}-${String(activeLocationId)}`}
                   layout
                   className="flex min-w-0 flex-col gap-3"
                   initial={{ opacity: reducedMotion ? 1 : 0 }}
@@ -194,7 +228,7 @@ export function VehicleSection() {
                   }}
                 >
                   <h3 className="text-xl font-semibold leading-snug tracking-tight text-slate-900 dark:text-white">
-                    {routePoints[activeIndex].label}
+                    {routePoints[routeStep.index].label}
                   </h3>
                   <div className="flex min-w-0 items-center gap-2 text-sm leading-tight text-slate-600 dark:text-slate-400">
                     {activeContent.icon === 'route' ? (
@@ -287,7 +321,7 @@ export function VehicleSection() {
                       <p className="text-xl font-bold leading-tight text-slate-900 dark:text-white">
                         {monthlyPart}
                       </p>
-                      <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                      <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                         {dailyPart}
                       </p>
                     </div>

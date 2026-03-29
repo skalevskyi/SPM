@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { OfferCalculatorPanel } from '@/components/sections/OfferCalculatorPanel';
 import { useLanguage } from '@/context/LanguageContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { BASE_PATH } from '@/lib/base-path';
@@ -17,7 +18,6 @@ const OFFRES = [
 ];
 
 type OfferId = (typeof OFFRES)[number]['id'];
-const CALC_DURATION = 0.28;
 const OFFER_INDEX: Record<OfferId, number> = { BASIC: 0, PRO: 1, EXCLUSIVE: 2 };
 const focusRing =
   'focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70';
@@ -28,14 +28,13 @@ export function OffresSection() {
   const [expandedPackage, setExpandedPackage] = useState<OfferId | null>(null);
   const [switchDirection, setSwitchDirection] = useState<1 | -1>(1);
   const previewRef = useRef<HTMLDivElement>(null);
+  const prevPackageRef = useRef<OfferId | null>(null);
 
-  // Calculator UI input state (no computed values stored).
   const [durationMonths, setDurationMonths] = useState<DurationMonths>(3);
+  const [weekendExposure, setWeekendExposure] = useState(false);
   const [photoReporting, setPhotoReporting] = useState(false);
   const [videoReporting, setVideoReporting] = useState(false);
-  const [priorityBooking, setPriorityBooking] = useState(false);
   const [exclusivity, setExclusivity] = useState(false);
-  const [extraRouteDays, setExtraRouteDays] = useState(0);
   const [displayMode, setDisplayMode] = useState<DisplayMode>('monthly');
 
   const toggleCalculator = (id: OfferId) => {
@@ -88,39 +87,72 @@ export function OffresSection() {
         : t.offres.positioningFull
     : null;
 
+  const packageDescription = expandedPackage
+    ? expandedPackage === 'BASIC'
+      ? t.offres.descriptionRear
+      : expandedPackage === 'PRO'
+        ? t.offres.descriptionSide
+        : t.offres.descriptionFull
+    : '';
+  const packageFeatured = Boolean(selectedOffer?.featured);
+
   useEffect(() => {
-    // Reset only user inputs when switching the selected package.
-    // Keeps engine validation safe (e.g. BASIC cannot enable video).
-    if (expandedPackage === null) return;
-    setDurationMonths(3);
-    setPhotoReporting(false);
-    setVideoReporting(false);
-    setPriorityBooking(false);
-    setExclusivity(false);
-    setExtraRouteDays(0);
-    setDisplayMode('monthly');
+    if (expandedPackage === null) {
+      prevPackageRef.current = null;
+      return;
+    }
+    const prev = prevPackageRef.current;
+    prevPackageRef.current = expandedPackage;
+
+    if (prev === null || prev === expandedPackage) {
+      return;
+    }
+
+    if (expandedPackage === 'BASIC') {
+      setVideoReporting(false);
+    }
+    if (expandedPackage === 'PRO' || expandedPackage === 'EXCLUSIVE') {
+      setPhotoReporting(false);
+    }
+    if (expandedPackage === 'EXCLUSIVE') {
+      setExclusivity(false);
+    }
+    if (prev === 'EXCLUSIVE' && (expandedPackage === 'BASIC' || expandedPackage === 'PRO')) {
+      setExclusivity(false);
+    }
+    if (prev === 'EXCLUSIVE' && expandedPackage === 'BASIC') {
+      setVideoReporting(false);
+    }
   }, [expandedPackage]);
 
   const selection: CalculatorSelection | null = useMemo(() => {
     if (!expandedPackage) return null;
 
-    // Build selection object so we NEVER pass forbidden keys for EXCLUSIVE
-    // (e.g. exclusivity toggle key must be absent, not just undefined).
-    const base = {
+    const base: CalculatorSelection = {
       packageId: expandedPackage,
       durationMonths,
-      extraRouteDays,
-      videoReporting,
-    } as const;
-
-    const sel: CalculatorSelection = {
-      ...base,
-      ...(expandedPackage === 'BASIC' ? { photoReporting } : {}),
-      ...(expandedPackage !== 'EXCLUSIVE' ? { priorityBooking, exclusivity } : {}),
+      extraRouteDays: weekendExposure ? 2 : 0,
     };
 
-    return sel;
-  }, [durationMonths, expandedPackage, exclusivity, extraRouteDays, photoReporting, priorityBooking, videoReporting]);
+    if (expandedPackage === 'BASIC') {
+      return {
+        ...base,
+        photoReporting,
+        exclusivity,
+      };
+    }
+    if (expandedPackage === 'PRO') {
+      return {
+        ...base,
+        videoReporting,
+        exclusivity,
+      };
+    }
+    return {
+      ...base,
+      videoReporting,
+    };
+  }, [durationMonths, expandedPackage, exclusivity, photoReporting, videoReporting, weekendExposure]);
 
   const calculatorResult = useMemo(() => {
     if (!selection) return null;
@@ -202,7 +234,6 @@ export function OffresSection() {
                 transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : i * 0.08 }}
               >
                 <div className="flex min-h-[340px] flex-col p-6">
-                  {/* Top area: label + optional recommended badge */}
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <h3 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
@@ -219,7 +250,6 @@ export function OffresSection() {
                     ) : null}
                   </div>
 
-                  {/* Visual area: vehicle mockup */}
                   <div className="relative mt-6 flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-slate-100/70 px-4 dark:border-slate-600/80 dark:bg-slate-700/35">
                     <Image
                       src={offer.image}
@@ -230,12 +260,10 @@ export function OffresSection() {
                     />
                   </div>
 
-                  {/* Short card description */}
                   <p className="mt-4 text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
                     {description}
                   </p>
 
-                  {/* Value bullets */}
                   <ul className="mt-5 space-y-2">
                     {benefits.map((benefit, bi) => (
                       <li
@@ -251,7 +279,6 @@ export function OffresSection() {
                     ))}
                   </ul>
 
-                  {/* CTA area */}
                   <div className="mt-6">
                     <button
                       type="button"
@@ -278,324 +305,47 @@ export function OffresSection() {
               exit={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : -8 }}
               transition={{ duration: reducedMotion ? 0 : 0.24 }}
             >
-              <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-slate-50/80 p-6 md:p-8 dark:border-slate-600 dark:bg-slate-900/90">
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={expandedPackage}
-                    initial={{
-                      opacity: reducedMotion ? 1 : 0,
-                      x: reducedMotion ? 0 : switchDirection * 18,
-                      y: 0,
-                    }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    exit={{
-                      opacity: reducedMotion ? 1 : 0,
-                      x: reducedMotion ? 0 : switchDirection * -18,
-                      y: 0,
-                    }}
-                    transition={{ duration: reducedMotion ? 0 : 0.2 }}
-                  >
-                    <h4 className="text-base font-semibold text-slate-900 dark:text-white">
-                      {t.offres.simTitle}
-                    </h4>
-                    <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                      {t.offres.hint}
-                    </p>
-
-                    <div className="mt-5 space-y-2.5">
-                      <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-300">
-                        <span className="mr-2 inline-block font-medium uppercase tracking-wide text-slate-500 dark:text-slate-300">
-                          {t.offres.simFormatLabel}:
-                        </span>
-                        <span className="font-medium text-slate-700 dark:text-slate-200">
-                          {selectedName}
-                        </span>
-                      </p>
-                      <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-300">
-                        {selectedPositioning}
-                      </p>
-                      <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-300">
-                        {t.offres.simAdapted}
-                      </p>
-                    </div>
-
-                    {calculatorResult && calculatorResult.ok ? (
-                      <div className="mt-5 space-y-4">
-                        {/* Duration */}
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            {t.offres.simDuration}
-                          </p>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {[3, 6, 9, 12].map((m) => {
-                              const isActive = durationMonths === m;
-                              return (
-                                <button
-                                  key={m}
-                                  type="button"
-                                  onClick={() => setDurationMonths(m as DurationMonths)}
-                                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 ease-out focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-400/70 ${
-                                    isActive
-                                      ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
-                                      : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700/70 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/60'
-                                  }`}
-                                >
-                                  {m} {t.offres.calculatorDurationUnit}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Add-ons toggles */}
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            {t.offres.calculatorAddonsTitle}
-                          </p>
-                          <div className="mt-2 space-y-3">
-                            {calculatorResult.addOnEligibility.map((addon) => {
-                              const isIncluded = addon.includedByDefinition;
-                              const isAvailable = addon.available;
-                              const isActive = addon.active;
-
-                              const label =
-                                addon.addonId === 'photo_reporting'
-                                  ? t.offres.calculatorAddonPhotoReporting
-                                  : addon.addonId === 'video_reporting'
-                                    ? t.offres.calculatorAddonVideoReporting
-                                    : addon.addonId === 'extra_route_day'
-                                      ? t.offres.calculatorAddonExtraRouteDay
-                                      : addon.addonId === 'priority_booking'
-                                        ? t.offres.calculatorAddonPriorityBooking
-                                        : t.offres.calculatorAddonExclusivity;
-
-                              return (
-                                <div
-                                  key={addon.addonId}
-                                  className="flex items-center justify-between gap-4 rounded-xl border border-slate-200/90 bg-white/70 px-3 py-3 dark:border-slate-600/70 dark:bg-slate-700/30"
-                                >
-                                  <div className="min-w-0">
-                                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                                      {label}
-                                    </p>
-                                    {isIncluded ? (
-                                      <p className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                                        {t.offres.calculatorBadgeIncluded}
-                                      </p>
-                                    ) : isAvailable ? (
-                                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                        {addon.addonId === 'priority_booking' && isActive
-                                          ? formatEur(addon.chargedOneTimeEur)
-                                          : addon.addonId !== 'priority_booking' && isActive
-                                            ? `${formatEur(addon.chargedMonthlyEur)}${t.offres.calculatorPerMonthSuffix}`
-                                            : ''}
-                                      </p>
-                                    ) : (
-                                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                        {t.offres.calculatorBadgeNotAvailable}
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  {addon.addonId === 'extra_route_day' ? (
-                                    addon.available ? (
-                                      // Extra route days is a quantity input, not a checkbox.
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          type="button"
-                                          onClick={() => setExtraRouteDays((d) => Math.max(0, d - 1))}
-                                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600/70 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/60"
-                                        >
-                                          −
-                                        </button>
-                                        <input
-                                          type="number"
-                                          min={0}
-                                          max={10}
-                                          step={1}
-                                          value={extraRouteDays}
-                                          onChange={(e) => {
-                                            const raw = Number(e.target.value);
-                                            const next = Number.isFinite(raw) ? raw : 0;
-                                            setExtraRouteDays(Math.max(0, Math.min(10, Math.floor(next))));
-                                          }}
-                                          className="w-14 rounded-lg border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-800 outline-none focus-visible:ring-1 focus-visible:ring-sky-400/70 dark:border-slate-600/70 dark:bg-slate-800/30 dark:text-slate-200"
-                                          aria-label={t.offres.calculatorAddonExtraRouteDay}
-                                        />
-                                        <button
-                                          type="button"
-                                          onClick={() => setExtraRouteDays((d) => Math.min(10, d + 1))}
-                                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600/70 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/60"
-                                        >
-                                          +
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                                        {isIncluded ? '—' : ''}
-                                      </span>
-                                    )
-                                  ) : isIncluded || !isAvailable ? (
-                                    <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                                      {isIncluded ? '—' : ''}
-                                    </span>
-                                  ) : (
-                                    <input
-                                      type="checkbox"
-                                      checked={isActive}
-                                      onChange={(e) => {
-                                        const next = e.target.checked;
-                                        if (addon.addonId === 'photo_reporting') setPhotoReporting(next);
-                                        else if (addon.addonId === 'video_reporting') setVideoReporting(next);
-                                        else if (addon.addonId === 'priority_booking') setPriorityBooking(next);
-                                        else if (addon.addonId === 'exclusivity') setExclusivity(next);
-                                      }}
-                                      aria-label={label}
-                                      className="h-4 w-4 accent-sky-600"
-                                    />
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Price display mode */}
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            {t.offres.calculatorPriceModeTitle}
-                          </p>
-                          <div className="mt-2 inline-flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-600/70 dark:bg-slate-800/30">
-                            <button
-                              type="button"
-                              onClick={() => setDisplayMode('monthly')}
-                              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 ease-out ${
-                                displayMode === 'monthly'
-                                  ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
-                                  : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/60'
-                              }`}
-                            >
-                              {t.offres.calculatorModeMonthly}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setDisplayMode('contract_total')}
-                              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 ease-out ${
-                                displayMode === 'contract_total'
-                                  ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
-                                  : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/60'
-                              }`}
-                            >
-                              {t.offres.calculatorModeContractTotal}
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Contacts + price summary */}
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-700/70 dark:bg-slate-900/50">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            {t.offres.calculatorContactsLabel}
-                          </p>
-                          <p className="mt-1 text-3xl font-bold leading-tight text-slate-900 dark:text-white">
-                            {calculatorResult.indicativeMonthlyContacts.toLocaleString()}
-                          </p>
-
-                          {displayMode === 'monthly' ? (
-                            <div className="mt-4 space-y-1">
-                              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                {t.offres.calculatorFromMonth2Label}
-                              </p>
-                              <p className="text-2xl font-bold leading-tight text-slate-900 dark:text-white">
-                                {formatEur(calculatorResult.monthlyView.fromMonth2TotalEur)}
-                                {t.offres.calculatorPerMonthSuffix}
-                              </p>
-                              {calculatorResult.monthlyView.month1TotalEur > 0 ? (
-                                <p className="text-sm text-slate-600 dark:text-slate-300">
-                                  {t.offres.calculatorMonth1Label}: {formatEur(calculatorResult.monthlyView.month1TotalEur)}
-                                </p>
-                              ) : null}
-                            </div>
-                          ) : (
-                            <div className="mt-4 space-y-1">
-                              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                {t.offres.calculatorContractTotalLabel}
-                              </p>
-                              <p className="text-2xl font-bold leading-tight text-slate-900 dark:text-white">
-                                {formatEur(calculatorResult.contractTotalView.contractTotalEur)}
-                              </p>
-                              <p className="text-sm text-slate-600 dark:text-slate-300">
-                                {t.offres.calculatorMonth1Label}: {formatEur(calculatorResult.contractTotalView.month1TotalEur)}
-                              </p>
-                              <p className="text-sm text-slate-600 dark:text-slate-300">
-                                {t.offres.calculatorFromMonth2Label}:{' '}
-                                {formatEur(calculatorResult.contractTotalView.fromMonth2TotalEur)}
-                                {t.offres.calculatorPerMonthSuffix}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Light breakdown */}
-                        <div className="space-y-2 rounded-xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700/70 dark:bg-slate-800/30">
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                              {t.offres.calculatorBaseMediaLabel}
-                            </span>
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {formatEur(calculatorResult.monthlyView.month1BaseMediaEur)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                              {t.offres.calculatorAddonsSubtotalLabel}
-                            </span>
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {formatEur(calculatorResult.monthlyView.fromMonth2RecurringAddonsEur)}
-                              {t.offres.calculatorPerMonthSuffix}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                              {t.offres.calculatorOneTimeFeesLabel}
-                            </span>
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {formatEur(calculatorResult.monthlyView.month1OneTimeFeesEur)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between gap-4 pt-2">
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {t.offres.calculatorMonth1TotalLabel}
-                            </span>
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {formatEur(calculatorResult.monthlyView.month1TotalEur)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {t.offres.calculatorRecurringTotalLabel}
-                            </span>
-                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {formatEur(calculatorResult.monthlyView.fromMonth2TotalEur)}
-                              {t.offres.calculatorPerMonthSuffix}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ) : null}
-
-                    <p className="mt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-300">
-                      {t.offres.simDisclaimer}
-                    </p>
-
-                    <a
-                      href="#contact"
-                      className={`mt-5 block w-full rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 py-2.5 text-center text-sm font-medium text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
-                    >
-                      {t.offres.ctaEstimation}
-                    </a>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={expandedPackage}
+                  initial={{
+                    opacity: reducedMotion ? 1 : 0,
+                    x: reducedMotion ? 0 : switchDirection * 18,
+                    y: 0,
+                  }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  exit={{
+                    opacity: reducedMotion ? 1 : 0,
+                    x: reducedMotion ? 0 : switchDirection * -18,
+                    y: 0,
+                  }}
+                  transition={{ duration: reducedMotion ? 0 : 0.2 }}
+                >
+                  {calculatorResult ? (
+                    <OfferCalculatorPanel
+                      packageId={expandedPackage}
+                      durationMonths={durationMonths}
+                      setDurationMonths={setDurationMonths}
+                      weekendExposure={weekendExposure}
+                      setWeekendExposure={setWeekendExposure}
+                      photoReporting={photoReporting}
+                      setPhotoReporting={setPhotoReporting}
+                      videoReporting={videoReporting}
+                      setVideoReporting={setVideoReporting}
+                      exclusivity={exclusivity}
+                      setExclusivity={setExclusivity}
+                      displayMode={displayMode}
+                      setDisplayMode={setDisplayMode}
+                      result={calculatorResult}
+                      selectedName={selectedName ?? ''}
+                      selectedPositioning={selectedPositioning ?? ''}
+                      packageDescription={packageDescription}
+                      packageFeatured={packageFeatured}
+                      formatEur={formatEur}
+                    />
+                  ) : null}
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           ) : null}
         </AnimatePresence>

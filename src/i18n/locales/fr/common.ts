@@ -4,6 +4,7 @@
 
 export const locations = {
   montpellier: 'Montpellier',
+  perols: 'Pérols',
   portMarianne: 'Port Marianne',
   carnon: 'Carnon',
   palavas: 'Palavas',
@@ -27,7 +28,7 @@ export const footer = {
   },
   positioning: 'Publicité mobile locale entre Montpellier et le littoral.',
   tagline:
-    'Publicité mobile Montpellier & Littoral — Carnon, Palavas, La Grande-Motte, Port Marianne.',
+    'Publicité mobile Montpellier & Littoral — Pérols, Carnon, Palavas, La Grande-Motte, Port Marianne.',
   copyright: '© Skalevskyi publicité mobile',
 } as const;
 

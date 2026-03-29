@@ -5,11 +5,12 @@
 export const parcours = {
   title: 'Parcours et zones de visibilité',
   subtitle:
-    'Présence quotidienne sur des axes à fort trafic entre Montpellier et le littoral.',
+    'Présence quotidienne sur un trajet entre Montpellier et La Grande-Motte, avec des passages réguliers via Pérols, Carnon, Palavas et Port Marianne.',
   timelineHint:
     'Cliquez sur une étape pour mettre en pause et voir les détails.',
   descriptors: {
     montpellier: 'centre urbain',
+    perols: 'axe vers la mer',
     portMarianne: 'quartier actif',
     carnon: 'axe littoral',
     palavas: 'front de mer',
@@ -24,6 +25,15 @@ export const parcours = {
       bullet1: 'Visibilité dans les flux urbains quotidiens',
       bullet2: 'Contacts répétés avec une audience locale active',
       bullet3: 'Présence visible dans les zones de circulation et d’arrêt',
+    },
+    perols: {
+      description:
+        'Vers le littoral : passages réguliers et visibilité récurrente dans les flux quotidiens.',
+      tag: 'Axe vers la mer',
+      icon: 'district',
+      bullet1: 'Visibilité lors des passages vers le littoral',
+      bullet2: 'Contacts répétés pendant les flux réguliers en semaine',
+      bullet3: 'Visibilité favorable près des zones de circulation et d’arrêt',
     },
     portMarianne: {
       description:
@@ -75,8 +85,9 @@ export const parcours = {
     'Estimations basées sur les flux locaux et la répétition quotidienne.',
   visibilityIntro2: '',
   visibilitySummary: 'Exemples indicatifs par format',
-  visibilityRear: 'BASIC (arrière) — ~5 000 / jour, ~110 000 / mois',
-  visibilitySide: 'PRO (latéral) — ~7 000 / jour, ~150 000 / mois',
-  visibilityFull: 'EXCLUSIVE (habillage complet) — ~9 000 / jour, ~200 000 / mois',
+  visibilityRear: 'BASIC (arrière) — ~1 000 / jour (indicatif), ~30 000 / mois',
+  visibilitySide: 'PRO (latéral) — ~1 500 / jour (indicatif), ~45 000 / mois',
+  visibilityFull:
+    'EXCLUSIVE (habillage complet) — ~2 000 / jour (indicatif), ~60 000 / mois',
   visibilityIndicative: '· visibilité indicative',
 } as const;
