@@ -105,7 +105,7 @@ export const offres = {
   calculatorDiscountFirstMonthLabel: 'Знижка за перший місяць',
   calculatorAdjustmentsTitle: 'Коригування',
   calculatorPaymentStructureBaseTitle: 'Структура оплати (лише база)',
-  calculatorPaymentStructureTotalsTitle: 'Структура оплати (орієнтовні суми)',
+  calculatorPaymentStructureTotalsTitle: 'Структура оплати (база, орієнтовно)',
   calculatorAddonsContractListHint: 'Обрані опції вже включені в суми вище.',
   calculatorPayableTitle: 'До оплати',
   calculatorPayableFirstMonth: 'До оплати: перший місяць',

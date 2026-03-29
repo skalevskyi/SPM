@@ -103,7 +103,7 @@ export const offres = {
   calculatorDiscountFirstMonthLabel: 'First month discount',
   calculatorAdjustmentsTitle: 'Adjustments',
   calculatorPaymentStructureBaseTitle: 'Payment structure (base only)',
-  calculatorPaymentStructureTotalsTitle: 'Payment structure (indicative totals)',
+  calculatorPaymentStructureTotalsTitle: 'Payment structure (base, indicative)',
   calculatorAddonsContractListHint: 'Selected add-ons are included in the totals above.',
   calculatorPayableTitle: 'Amount due',
   calculatorPayableFirstMonth: 'To pay: first month',

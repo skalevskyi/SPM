@@ -674,14 +674,14 @@ export function OfferCalculatorPanel(props: Props) {
                   <div className="mt-1.5 space-y-1 md:mt-2 md:space-y-1.5">
                     {ladderRow(
                       t.offres.calculatorPriceLineMonth1,
-                      formatEur(monthlyView.month1TotalEur),
+                      formatEur(monthlyView.month1BaseMediaEur),
                       'tabular-nums text-sm font-normal text-slate-600 dark:text-slate-300',
                       'min-w-0 text-left text-xs text-slate-500 dark:text-slate-400',
                     )}
                     {ladderRow(
                       t.offres.calculatorPriceLineFromMonth2,
                       <>
-                        {formatEur(monthlyView.fromMonth2TotalEur)}
+                        {formatEur(monthlyView.fromMonth2BaseMediaEur)}
                         {t.offres.calculatorPerMonthSuffix}
                       </>,
                       'tabular-nums text-sm font-normal text-slate-600 dark:text-slate-300',
