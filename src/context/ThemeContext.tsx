@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
@@ -21,13 +22,12 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
+/** Returns `light` / `dark` from `spm-theme` or a legacy `*-theme` key; `null` if none — follow system. */
+function readStoredTheme(): Theme | null {
+  if (typeof window === 'undefined') return null;
   const stored = localStorage.getItem(THEME_KEY) as Theme | null;
   if (stored === 'dark' || stored === 'light') return stored;
 
-  // Backward-compatible fallback: read any existing `*-theme` key in localStorage.
-  // This avoids hardcoding legacy brand keys while preserving stored preference.
   for (let i = 0; i < localStorage.length; i += 1) {
     const key = localStorage.key(i);
     if (!key || key === THEME_KEY) continue;
@@ -35,7 +35,17 @@ function getInitialTheme(): Theme {
     const legacyStored = localStorage.getItem(key) as Theme | null;
     if (legacyStored === 'dark' || legacyStored === 'light') return legacyStored;
   }
+  return null;
+}
 
+function hasManualPersistence(): boolean {
+  return readStoredTheme() !== null;
+}
+
+function resolveTheme(): Theme {
+  if (typeof window === 'undefined') return 'light';
+  const stored = readStoredTheme();
+  if (stored !== null) return stored;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
@@ -50,9 +60,11 @@ function applyTheme(theme: Theme) {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('light');
+  /** Bumps when `spm-theme` is written so the system-preference listener is dropped after manual toggle. */
+  const [themeEpoch, setThemeEpoch] = useState(0);
 
-  useEffect(() => {
-    const initial = getInitialTheme();
+  useLayoutEffect(() => {
+    const initial = resolveTheme();
     setThemeState(initial);
     applyTheme(initial);
   }, []);
@@ -63,11 +75,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(THEME_KEY, next);
     }
+    setThemeEpoch((e) => e + 1);
   }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   }, [theme, setTheme]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    if (hasManualPersistence()) return undefined;
+
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => {
+      if (hasManualPersistence()) return;
+      const next = mq.matches ? 'dark' : 'light';
+      setThemeState(next);
+      applyTheme(next);
+    };
+
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [themeEpoch]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({ theme, setTheme, toggleTheme }),

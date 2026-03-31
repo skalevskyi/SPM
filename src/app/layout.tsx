@@ -38,10 +38,27 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+/** Mirrors `ThemeContext` resolution: `spm-theme` → legacy `*-theme` → `prefers-color-scheme`. */
 const themeScript = `
 (function(){
-  var s=localStorage.getItem('spm-theme');
-  var dark=s==='dark'||(!s&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var KEY='spm-theme';
+  var s=localStorage.getItem(KEY);
+  var dark;
+  if(s==='dark'){dark=true;}
+  else if(s==='light'){dark=false;}
+  else{
+    var legacy=null;
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(!k||k===KEY)continue;
+      if(!k.endsWith('-theme'))continue;
+      var v=localStorage.getItem(k);
+      if(v==='dark'||v==='light'){legacy=v;break;}
+    }
+    if(legacy==='dark')dark=true;
+    else if(legacy==='light')dark=false;
+    else dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
   document.documentElement.classList.toggle('dark',!!dark);
 })();
 `;
