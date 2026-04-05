@@ -18,7 +18,7 @@ const SWIPE_THRESHOLD_PX = 48;
  * tuned per theme (atmospheric, not a flat block).
  */
 const stageSurfaceClass =
-  'relative select-none rounded-xl p-3 sm:p-4 ' +
+  'relative touch-pan-y select-none rounded-xl p-2 sm:p-3 ' +
   'bg-[radial-gradient(ellipse_80%_76%_at_50%_51%,rgb(255_255_255)_0%,rgb(248_250_252)_32%,rgb(226_232_240)_100%)] ' +
   'dark:bg-[radial-gradient(ellipse_80%_76%_at_50%_50%,rgb(71_85_105/0.42)_0%,rgb(51_65_85/0.32)_44%,rgb(15_23_42)_100%)]';
 
@@ -102,17 +102,33 @@ export function OffreLightbox({
     closeRef.current?.focus();
   }, [isOpen]);
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    pointerStartX.current = e.clientX;
+  const releaseCaptureIfNeeded = (el: HTMLElement, pointerId: number) => {
+    if (el.hasPointerCapture(pointerId)) {
+      el.releasePointerCapture(pointerId);
+    }
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    pointerStartX.current = e.clientX;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    releaseCaptureIfNeeded(el, e.pointerId);
     if (pointerStartX.current == null) return;
     const dx = e.clientX - pointerStartX.current;
     pointerStartX.current = null;
     if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
     if (dx < 0) goNext();
     else goPrev();
+  };
+
+  const onPointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    releaseCaptureIfNeeded(el, e.pointerId);
+    pointerStartX.current = null;
   };
 
   if (!mounted || typeof document === 'undefined') return null;
@@ -138,9 +154,9 @@ export function OffreLightbox({
           />
           <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 pointer-events-none">
             <div
-              className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-900/[0.08] ring-1 ring-slate-900/[0.04] dark:border-slate-600/50 dark:bg-slate-900 dark:shadow-xl dark:shadow-black/25 dark:ring-white/[0.06]"
+              className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/[0.08] ring-1 ring-slate-900/[0.04] dark:border-slate-600/50 dark:bg-slate-900 dark:shadow-xl dark:shadow-black/25 dark:ring-white/[0.06]"
             >
-              <header className="mb-4 flex w-full items-center justify-between gap-4 border-b border-slate-200 pb-4 dark:border-slate-600/55">
+              <header className="mb-3 flex w-full items-center justify-between gap-4 border-b border-slate-200 pb-3 dark:border-slate-600/55">
                 <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-800 dark:text-slate-300">
                   {packageId}
                 </p>
@@ -160,11 +176,9 @@ export function OffreLightbox({
                 className={stageSurfaceClass}
                 onPointerDown={onPointerDown}
                 onPointerUp={onPointerUp}
-                onPointerCancel={() => {
-                  pointerStartX.current = null;
-                }}
+                onPointerCancel={onPointerCancel}
               >
-                <div className="relative mx-auto h-[min(72vh,820px)] w-full max-w-full">
+                <div className="relative mx-auto h-[min(52vh,560px)] w-full max-w-full">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={index}
@@ -190,7 +204,7 @@ export function OffreLightbox({
 
               {images.length > 1 ? (
                 <div
-                  className="mt-6 flex min-h-[44px] items-center justify-center gap-3 border-t border-slate-200 pt-5 dark:border-slate-600/50"
+                  className="mt-4 flex min-h-[44px] items-center justify-center gap-3 border-t border-slate-200 pt-3 dark:border-slate-600/50"
                   role="tablist"
                   aria-label={imageCarouselLabel}
                 >
