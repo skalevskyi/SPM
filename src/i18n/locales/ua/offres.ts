@@ -119,6 +119,8 @@ export const offres = {
   calculatorResultHeroSubtitleContract: 'За {months} міс. · лише база медіа',
   calculatorBlockBasePriceTitle: 'Базова ціна',
   calculatorDiscountFirstMonthLabel: 'Знижка за перший місяць',
+  calculatorDiscountFirstMonthNote:
+    'Компенсація витрат на розробку та монтаж реклами',
   calculatorAdjustmentsTitle: 'Коригування',
   calculatorPaymentStructureBaseTitle: 'Структура оплати (лише база)',
   calculatorPaymentStructureTotalsTitle: 'Структура оплати (база, орієнтовно)',

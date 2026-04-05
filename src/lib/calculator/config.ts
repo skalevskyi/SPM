@@ -26,8 +26,12 @@ export const DURATION_MULTIPLIERS: Record<DurationMonths, number> = {
   12: 0.88,
 };
 
-// ===== First month discount (base media fee only) =====
-export const FIRST_MONTH_DISCOUNT_EUR = 100;
+// ===== First month discount (base media fee only; per package) =====
+export const FIRST_MONTH_DISCOUNT_EUR_BY_PACKAGE: Record<PackageId, number> = {
+  BASIC: 100,
+  PRO: 100,
+  EXCLUSIVE: 200,
+};
 
 // ===== Add-ons: draft prices =====
 /** Monthly € when exclusivity is selected (BASIC / PRO). EXCLUSIVE: included by definition, no line item. */

@@ -587,14 +587,19 @@ export function OfferCalculatorPanel(props: Props) {
                     isNonZeroEur(periodDiscountEurOnBase) ? (
                       <div className="space-y-1 pt-1">
                         <p className={summarySectionHeading}>{t.offres.calculatorAdjustmentsTitle}</p>
-                        {isNonZeroEur(monthlyView.month1BaseDiscountEur)
-                          ? ladderRow(
+                        {isNonZeroEur(monthlyView.month1BaseDiscountEur) ? (
+                          <div className="space-y-0.5">
+                            {ladderRow(
                               t.offres.calculatorDiscountFirstMonthLabel,
                               <>−{formatEur(monthlyView.month1BaseDiscountEur)}</>,
                               summaryDiscountValueClass,
                               'min-w-0 text-left text-xs text-slate-500 dark:text-slate-400',
-                            )
-                          : null}
+                            )}
+                            <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400 md:text-xs">
+                              {t.offres.calculatorDiscountFirstMonthNote}
+                            </p>
+                          </div>
+                        ) : null}
                         {isNonZeroEur(periodDiscountEurOnBase)
                           ? ladderRow(
                               t.offres.calculatorPeriodDiscountEurLabel,

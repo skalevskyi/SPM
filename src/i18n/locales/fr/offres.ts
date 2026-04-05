@@ -120,6 +120,8 @@ export const offres = {
   calculatorResultHeroSubtitleContract: 'Sur {months} mois · base média uniquement',
   calculatorBlockBasePriceTitle: 'Prix de base',
   calculatorDiscountFirstMonthLabel: 'Remise 1er mois',
+  calculatorDiscountFirstMonthNote:
+    'Compensation des frais de conception et de pose de la publicité',
   calculatorAdjustmentsTitle: 'Ajustements',
   calculatorPaymentStructureBaseTitle: 'Structure de paiement (base seule)',
   calculatorPaymentStructureTotalsTitle: 'Structure de paiement (base indicative)',

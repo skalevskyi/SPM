@@ -58,7 +58,10 @@ export function calculateCalculator(selection: CalculatorSelection): CalculatorR
   const resolved = resolveSelection(selection);
 
   const effectiveBaseMonthlyCents = computeEffectiveBaseMonthlyMediaCents(resolved);
-  const month1BaseAfterDiscountCents = computeBaseMonth1AfterDiscountCents(effectiveBaseMonthlyCents);
+  const month1BaseAfterDiscountCents = computeBaseMonth1AfterDiscountCents(
+    effectiveBaseMonthlyCents,
+    resolved.packageId,
+  );
 
   const recurringAddonsMonthlyCents = computeRecurringAddonsMonthlyCents(resolved);
   const oneTimeFeesCents = computeOneTimeFeesCents(resolved);

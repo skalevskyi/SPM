@@ -13,6 +13,15 @@ const focusRing =
 
 const SWIPE_THRESHOLD_PX = 48;
 
+/**
+ * Soft radial stage: center open/readable, edges slightly deeper — same logic in light/dark,
+ * tuned per theme (atmospheric, not a flat block).
+ */
+const stageSurfaceClass =
+  'relative select-none rounded-xl p-3 sm:p-4 ' +
+  'bg-[radial-gradient(ellipse_80%_76%_at_50%_51%,rgb(255_255_255)_0%,rgb(248_250_252)_32%,rgb(226_232_240)_100%)] ' +
+  'dark:bg-[radial-gradient(ellipse_80%_76%_at_50%_50%,rgb(71_85_105/0.42)_0%,rgb(51_65_85/0.32)_44%,rgb(15_23_42)_100%)]';
+
 type OffreLightboxProps = {
   isOpen: boolean;
   onClose: (finalIndex: number) => void;
@@ -123,14 +132,16 @@ export function OffreLightbox({
           transition={{ duration: reducedMotion ? 0 : 0.2 }}
         >
           <div
-            className="absolute inset-0 bg-black/55 backdrop-blur-sm dark:bg-black/65"
+            className="absolute inset-0 bg-black/[0.22] backdrop-blur-md dark:bg-black/[0.26]"
             aria-hidden
             onClick={handleClose}
           />
-          <div className="relative flex min-h-full items-center justify-center p-4 pointer-events-none">
-            <div className="pointer-events-auto w-full max-w-4xl rounded-xl border border-white/10 bg-slate-950/45 p-4 shadow-2xl shadow-black/20 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/55">
-              <header className="mb-5 flex w-full items-center justify-between gap-4 border-b border-white/10 pb-4">
-                <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-300">
+          <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 pointer-events-none">
+            <div
+              className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-900/[0.08] ring-1 ring-slate-900/[0.04] dark:border-slate-600/50 dark:bg-slate-900 dark:shadow-xl dark:shadow-black/25 dark:ring-white/[0.06]"
+            >
+              <header className="mb-4 flex w-full items-center justify-between gap-4 border-b border-slate-200 pb-4 dark:border-slate-600/55">
+                <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-800 dark:text-slate-300">
                   {packageId}
                 </p>
                 <button
@@ -139,13 +150,14 @@ export function OffreLightbox({
                   aria-label={labelClose}
                   onClick={handleClose}
                   title={labelClose}
-                  className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-500/35 bg-slate-800/50 text-slate-100 transition-colors hover:border-slate-400/45 hover:bg-slate-700/55 dark:border-slate-500/25 dark:bg-slate-900/70 dark:hover:border-slate-500/40 dark:hover:bg-slate-800/80 ${focusRing}`}
+                  className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 shadow-sm transition-colors hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600/90 dark:bg-slate-800 dark:text-slate-100 dark:shadow-none dark:hover:border-slate-500 dark:hover:bg-slate-700 dark:hover:text-white ${focusRing}`}
                 >
                   <X className="h-4 w-4 opacity-90" strokeWidth={2} aria-hidden />
                 </button>
               </header>
+
               <div
-                className="relative w-full"
+                className={stageSurfaceClass}
                 onPointerDown={onPointerDown}
                 onPointerUp={onPointerUp}
                 onPointerCancel={() => {
@@ -169,14 +181,16 @@ export function OffreLightbox({
                         className="object-contain"
                         sizes="(max-width: 896px) 100vw, 896px"
                         priority
+                        draggable={false}
                       />
                     </motion.div>
                   </AnimatePresence>
                 </div>
               </div>
+
               {images.length > 1 ? (
                 <div
-                  className="mt-7 flex min-h-[44px] items-center justify-center gap-3"
+                  className="mt-6 flex min-h-[44px] items-center justify-center gap-3 border-t border-slate-200 pt-5 dark:border-slate-600/50"
                   role="tablist"
                   aria-label={imageCarouselLabel}
                 >
@@ -196,8 +210,8 @@ export function OffreLightbox({
                       <span
                         className={`block rounded-full transition-all duration-200 ease-out ${
                           index === i
-                            ? 'h-3 w-10 bg-slate-200 shadow-sm dark:bg-slate-100'
-                            : 'h-3 w-3 bg-slate-500/70 hover:bg-slate-400 dark:bg-slate-500 dark:hover:bg-slate-400'
+                            ? 'h-3 w-10 bg-slate-800 shadow-sm dark:bg-slate-200 dark:shadow-black/25'
+                            : 'h-3 w-3 bg-slate-400 hover:bg-slate-500 dark:bg-slate-500 dark:hover:bg-slate-400'
                         }`}
                         aria-hidden
                       />

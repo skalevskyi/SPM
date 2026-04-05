@@ -25,7 +25,11 @@ const OFFRES = [
   },
   {
     id: 'EXCLUSIVE' as const,
-    images: [`${BASE_PATH}/vehicle/exclusive-1.png`, `${BASE_PATH}/vehicle/exclusive-2.png`] as const,
+    images: [
+      `${BASE_PATH}/vehicle/exclusive-1.png`,
+      `${BASE_PATH}/vehicle/exclusive-2.png`,
+      `${BASE_PATH}/vehicle/exclusive-3.png`,
+    ] as const,
     featured: false,
   },
 ];
