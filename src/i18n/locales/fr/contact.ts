@@ -21,6 +21,10 @@ export const contact = {
   submitLoading: 'Envoi en cours…',
   submitSuccess: 'Merci. Votre demande a bien été envoyée.',
   submitError: "Une erreur s'est produite. Réessayez ou contactez-nous autrement.",
+  submitErrorRateLimited:
+    'Trop de tentatives d’envoi. Patientez quelques minutes ou visitez spmads.fr si le problème persiste.',
+  submitErrorBackup:
+    "L'enregistrement sécurisé de votre demande a échoué. Réessayez dans quelques instants ou contactez-nous via spmads.fr.",
   validation: {
     required: 'Ce champ est requis',
     invalid: 'Format invalide',

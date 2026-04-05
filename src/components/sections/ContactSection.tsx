@@ -9,6 +9,8 @@ import type { TranslationKeys } from '@/i18n/types';
 import type { AddonId, PackageId } from '@/lib/calculator/types';
 import { buildContactPrefillMessage, type CalculatorContactPrefillPayload } from '@/lib/contactPrefillMessage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { trackSpmEvent } from '@/lib/analytics/client';
+import { withBasePath } from '@/lib/base-path';
 import type { CalculatorSummary, LeadApiResponse } from '@/lib/lead/types';
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -162,6 +164,7 @@ export function ContactSection() {
   } = useCalculatorContactPrefill();
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [submitErrorKind, setSubmitErrorKind] = useState<'generic' | 'rateLimited' | 'backup'>('generic');
   const [message, setMessage] = useState('');
   /** True while the textarea still reflects the last calculator-generated prefill (not user-edited). */
   const messageFromCalculatorRef = useRef(false);
@@ -170,6 +173,9 @@ export function ContactSection() {
 
   useEffect(() => {
     if (!calculatorPrefillPayload) return;
+    trackSpmEvent('calculator_prefill_used', {
+      packageId: calculatorPrefillPayload.packageId,
+    });
     setMessage((prev) => {
       if (prev.trim() !== '' && !messageFromCalculatorRef.current) return prev;
       const next = buildContactPrefillMessage(t, calculatorPrefillPayload, locale);
@@ -217,6 +223,7 @@ export function ContactSection() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFieldErrors({});
+    setSubmitErrorKind('generic');
     setStatus('loading');
 
     const form = e.currentTarget;
@@ -239,7 +246,7 @@ export function ContactSection() {
     };
 
     try {
-      const res = await fetch('/api/lead', {
+      const res = await fetch(withBasePath('/api/lead'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -249,6 +256,7 @@ export function ContactSection() {
       try {
         data = (await res.json()) as LeadApiResponse;
       } catch {
+        setSubmitErrorKind('generic');
         setStatus('error');
         return;
       }
@@ -259,10 +267,29 @@ export function ContactSection() {
         return;
       }
 
-      if (!res.ok || !data.ok) {
+      if (res.status === 429 || data.error === 'rate_limited') {
+        setSubmitErrorKind('rateLimited');
         setStatus('error');
         return;
       }
+
+      if (res.status === 503 || data.error === 'backup_failed') {
+        setSubmitErrorKind('backup');
+        setStatus('error');
+        return;
+      }
+
+      if (!res.ok || !data.ok) {
+        setSubmitErrorKind('generic');
+        setStatus('error');
+        return;
+      }
+
+      trackSpmEvent('lead_submitted', {
+        locale,
+        leadOrigin,
+        hasCalculatorSummary: calculatorSummary !== undefined,
+      });
 
       form.reset();
       setMessage('');
@@ -270,6 +297,7 @@ export function ContactSection() {
       lastCalculatorPayloadRef.current = null;
       setStatus('success');
     } catch {
+      setSubmitErrorKind('generic');
       setStatus('error');
     }
   }
@@ -350,7 +378,7 @@ export function ContactSection() {
           ) : (
             <form onSubmit={handleSubmit} noValidate className="mt-10">
               <motion.div
-                className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 md:p-8 dark:border-slate-700 dark:bg-slate-800/70"
+                className="relative space-y-5 rounded-2xl border border-slate-200 bg-white p-6 md:p-8 dark:border-slate-700 dark:bg-slate-800/70"
                 initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
@@ -361,7 +389,11 @@ export function ContactSection() {
                     className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-100"
                     role="alert"
                   >
-                    {t.contact.submitError}
+                    {submitErrorKind === 'rateLimited'
+                      ? t.contact.submitErrorRateLimited
+                      : submitErrorKind === 'backup'
+                        ? t.contact.submitErrorBackup
+                        : t.contact.submitError}
                   </p>
                 ) : null}
                 <div>
@@ -517,6 +549,19 @@ export function ContactSection() {
                     id="contact-message-error"
                     message={fieldMessage('message')}
                     reducedMotion={reducedMotion}
+                  />
+                </div>
+                <div
+                  className="absolute left-[9999px] top-0 h-px w-px overflow-hidden"
+                  aria-hidden
+                >
+                  <label htmlFor="contact-website">Website</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
                   />
                 </div>
                 <button

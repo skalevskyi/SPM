@@ -41,8 +41,18 @@ export type Lead = {
   calculatorSummary?: CalculatorSummary;
 };
 
+/** Machine-readable codes for clients; never include stack traces in HTTP bodies. */
+export type LeadApiErrorCode =
+  | 'invalid_json'
+  | 'validation_error'
+  | 'rate_limited'
+  | 'backup_failed'
+  | 'configuration_error'
+  | 'provider_error'
+  | 'server_error';
+
 export type LeadApiResponse = {
   ok: boolean;
-  error?: string;
+  error?: LeadApiErrorCode;
   fieldErrors?: Record<string, string>;
 };

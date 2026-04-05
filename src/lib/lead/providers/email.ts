@@ -1,12 +1,13 @@
 import { Resend } from 'resend';
 
+import { getPublicSiteUrl } from '@/lib/site-url';
+
 import type { CalculatorSummary, Lead, LeadLocale } from '../types';
 
 const MISSING_KEY = 'resend_not_configured';
 const MISSING_LEAD_TO = 'lead_to_email_not_configured';
 
 const BRAND_LINE = 'SPM — Skalevskyi publicité mobile';
-const SITE_URL = 'https://www.spmads.fr';
 
 function escapeHtml(text: string): string {
   return text
@@ -377,7 +378,7 @@ function buildAutoReplyHtml(lead: Lead): { html: string; text: string; subject: 
             <p style="margin:0 0 6px;font-size:15px;line-height:1.6;color:#334155;">${escapeHtml(copy.closingLine)}</p>
             <p style="margin:0;font-size:14px;line-height:1.5;color:#0f172a;">${brandEscaped}</p>
             <p style="margin:12px 0 0;font-size:14px;">
-              <a href="${SITE_URL}" style="color:#0284c7;text-decoration:none;">www.spmads.fr</a>
+              <a href="${getPublicSiteUrl()}" style="color:#0284c7;text-decoration:none;">www.spmads.fr</a>
             </p>
           </td>
         </tr>
@@ -422,7 +423,7 @@ function buildAutoReplyPlainText(
     '',
     copy.closingLine,
     BRAND_LINE,
-    SITE_URL,
+    getPublicSiteUrl(),
   );
 
   return out.join('\n');

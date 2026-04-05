@@ -21,6 +21,10 @@ export const contact = {
   submitLoading: 'Надсилання…',
   submitSuccess: 'Дякуємо. Ваш запит надіслано.',
   submitError: 'Сталася помилка. Спробуйте ще раз.',
+  submitErrorRateLimited:
+    'Забагато спроб відправки. Зачекайте кілька хвилин або відвідайте spmads.fr, якщо це повторюється.',
+  submitErrorBackup:
+    'Не вдалося безпечно зберегти ваш запит. Спробуйте ще раз пізніше або зв’яжіться через spmads.fr.',
   validation: {
     required: 'Це поле обов’язкове',
     invalid: 'Некоректний формат',

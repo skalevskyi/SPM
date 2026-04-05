@@ -21,6 +21,10 @@ export const contact = {
   submitLoading: 'Sending…',
   submitSuccess: 'Thank you. Your request has been sent.',
   submitError: 'Something went wrong. Please try again.',
+  submitErrorRateLimited:
+    'Too many submission attempts. Please wait a few minutes or visit spmads.fr if this continues.',
+  submitErrorBackup:
+    'We could not save your request securely. Please try again shortly or reach us via spmads.fr.',
   validation: {
     required: 'This field is required',
     invalid: 'Invalid format',

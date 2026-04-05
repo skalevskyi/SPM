@@ -1,5 +1,7 @@
 'use client';
 
+import { Analytics } from '@vercel/analytics/react';
+
 import { CalculatorContactPrefillProvider } from '@/context/CalculatorContactPrefillContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/context/ThemeContext';
@@ -10,6 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <LanguageProvider>
         <CalculatorContactPrefillProvider>{children}</CalculatorContactPrefillProvider>
       </LanguageProvider>
+      <Analytics />
     </ThemeProvider>
   );
 }

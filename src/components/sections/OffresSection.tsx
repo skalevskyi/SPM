@@ -8,6 +8,7 @@ import { OffreImageCarousel } from '@/components/offres/OffreImageCarousel';
 import { OfferCalculatorPanel } from '@/components/sections/OfferCalculatorPanel';
 import { useLanguage } from '@/context/LanguageContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { trackSpmEvent } from '@/lib/analytics/client';
 import { BASE_PATH } from '@/lib/base-path';
 import { calculateCalculator } from '@/lib/calculator';
 import type { CalculatorSelection, DisplayMode, DurationMonths } from '@/lib/calculator/types';
@@ -112,6 +113,12 @@ export function OffresSection() {
         : t.offres.descriptionFull
     : '';
   const packageFeatured = Boolean(selectedOffer?.featured);
+
+  useEffect(() => {
+    if (expandedPackage) {
+      trackSpmEvent('calculator_opened', { packageId: expandedPackage });
+    }
+  }, [expandedPackage]);
 
   useEffect(() => {
     if (expandedPackage === null) {

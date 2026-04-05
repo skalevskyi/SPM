@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 
+import { OrganizationJsonLd } from '@/components/OrganizationJsonLd';
 import { Providers } from '@/components/Providers';
 import { BASE_PATH } from '@/lib/base-path';
+import { getPublicSiteUrl } from '@/lib/site-url';
 
 import './globals.css';
 
@@ -12,10 +14,34 @@ const manrope = Manrope({
   variable: '--font-manrope',
 });
 
+const siteUrl = getPublicSiteUrl();
+
 export const metadata: Metadata = {
-  title: 'SPM — Publicité mobile Montpellier',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'SPM — Publicité mobile Montpellier',
+    template: '%s | SPM',
+  },
   description:
-    'Publicité sur véhicule à Montpellier, Port Marianne, Carnon, Palavas, La Grande-Motte. Formats Rear, Side, Full.',
+    'Publicité mobile sur véhicule à Montpellier et sur le littoral (Port Marianne, Carnon, Palavas, La Grande-Motte). Formats Rear, Side, Full. Estimation en ligne.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    url: siteUrl,
+    siteName: 'SPM',
+    title: 'SPM — Publicité mobile Montpellier',
+    description:
+      'Publicité mobile sur véhicule à Montpellier et sur le littoral. Visibilité locale B2B — estimation en ligne.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SPM — Publicité mobile Montpellier',
+    description:
+      'Publicité mobile sur véhicule à Montpellier et sur le littoral. Formats Rear, Side, Full.',
+  },
   icons: {
     icon: [
       { url: `${BASE_PATH}/logo/favicon.ico` },
@@ -71,6 +97,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning className={manrope.variable}>
       <body className="min-h-screen font-sans antialiased">
+        <OrganizationJsonLd />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>{children}</Providers>
       </body>
