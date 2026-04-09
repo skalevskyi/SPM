@@ -17,14 +17,14 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[calc(4rem+env(safe-area-inset-top))] md:pb-0 md:pt-0">
+      <main className="max-md:pb-[var(--shell-mobile-bottom-occupancy)] max-md:pt-[var(--shell-main-padding-top-mobile)] md:pb-0 md:pt-0">
         <HeroSection />
         <ConceptSection />
         <VehicleSection />
         <OffresSection />
         <ContactSection />
+        <Footer />
       </main>
-      <Footer />
       <MobileBottomNav />
       <FloatingActions />
     </>

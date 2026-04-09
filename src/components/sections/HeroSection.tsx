@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { BASE_PATH } from '@/lib/base-path';
+import { ctaShapeBase } from '@/lib/cta-shape';
 
 const HERO_IMAGES = [
   `${BASE_PATH}/vehicle/hero-car-1.png`,
@@ -87,76 +88,70 @@ export function HeroSection() {
       />
 
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-12 md:grid-cols-2 md:gap-16 lg:gap-20 lg:items-center">
-          {/* Copy */}
-          <div className="flex min-w-0 flex-col justify-center space-y-4 md:space-y-6">
-            <motion.h1
-              className="max-w-3xl break-words text-4xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white md:text-6xl"
-              {...motionOpts}
-            >
-              {t.hero.headline}
-            </motion.h1>
-            <motion.p
-              className="max-w-2xl break-words text-lg leading-relaxed text-slate-600 dark:text-slate-300"
-              initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.08 }}
-            >
-              {t.hero.subheadline}
-            </motion.p>
-            <motion.p
-              className="max-w-2xl break-words text-2xl font-semibold leading-relaxed text-slate-900 dark:text-white"
-              initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.1 }}
-            >
-              {t.hero.scale}
-            </motion.p>
-            <motion.p
-              className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300"
-              initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.11 }}
-            >
-              {t.hero.scaleSupporting}
-            </motion.p>
-            <motion.p
-              className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300"
-              initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.12 }}
-            >
-              {t.hero.trust}
-            </motion.p>
-            <motion.div
-              className="flex flex-col gap-2.5 sm:flex-row"
-              initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.16 }}
-            >
-              <a
-                href="#contact"
-                className={`inline-block min-w-0 flex-1 rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 px-6 py-3 text-center text-base font-medium text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
-              >
-                {t.hero.ctaPrimary}
-              </a>
-              <a
-                href="#parcours"
-                className={`inline-block min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-6 py-3 text-center text-base font-medium text-slate-700 transition-colors duration-150 ease-out hover:bg-slate-50 active:bg-slate-100 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:active:bg-slate-800 ${focusRing}`}
-              >
-                {t.hero.ctaSecondary}
-              </a>
-            </motion.div>
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-16 md:gap-y-6 lg:gap-x-20 lg:items-center">
+          <motion.h1
+            className="max-w-3xl break-words text-4xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white md:col-start-1 md:row-start-1 md:text-6xl"
+            {...motionOpts}
+          >
+            {t.hero.headline}
+          </motion.h1>
+          <motion.p
+            className="max-w-2xl break-words text-lg leading-relaxed text-slate-600 dark:text-slate-300 md:col-start-1 md:row-start-2"
+            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.08 }}
+          >
+            {t.hero.subheadline}
+          </motion.p>
 
-          {/* Premium visual area: vehicle + schematic route hint */}
+          <motion.p
+            className="max-w-2xl break-words text-2xl font-semibold leading-relaxed text-slate-900 dark:text-white md:col-start-1 md:row-start-3"
+            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.1 }}
+          >
+            {t.hero.scale}
+          </motion.p>
+
           <motion.div
-            className="relative"
+            className="md:col-start-1 md:row-start-4"
+            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.16 }}
+          >
+            <a
+              href="#contact"
+              className={`inline-block w-full min-w-0 flex-1 rounded-2xl bg-gradient-to-b from-sky-500 to-sky-600 px-6 py-4 text-center text-base font-medium text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 md:w-auto md:rounded-lg md:py-3 ${focusRing}`}
+            >
+              {t.hero.ctaPrimary}
+            </a>
+          </motion.div>
+
+          <motion.p
+            className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:col-start-1 md:row-start-5"
+            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.11 }}
+          >
+            {t.hero.scaleSupporting}
+          </motion.p>
+          <motion.p
+            className="max-w-2xl break-words text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:col-start-1 md:row-start-6"
+            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.12 }}
+          >
+            {t.hero.trust}
+          </motion.p>
+
+          {/* Premium visual area: after primary CTA + supporting copy; desktop: col 2 */}
+          <motion.div
+            className="relative md:col-start-2 md:row-start-1 md:row-span-6 md:self-center"
             initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.06 }}
           >
-            <div className="relative aspect-[4/3] w-full max-w-xl mx-auto">
+            <div className="relative mx-auto aspect-[4/3] w-full max-w-xl">
               <RouteHint />
               <AnimatePresence mode="wait">
                 <motion.div
@@ -204,6 +199,20 @@ export function HeroSection() {
                 />
               ))}
             </div>
+          </motion.div>
+
+          <motion.div
+            className="md:col-start-1 md:row-start-7"
+            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.18 }}
+          >
+            <a
+              href="#parcours"
+              className={`inline-block w-full min-w-0 flex-1 text-center ${ctaShapeBase} border border-slate-300 bg-white text-slate-700 transition-colors duration-150 ease-out hover:bg-slate-50 active:bg-slate-100 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:active:bg-slate-800 md:w-auto ${focusRing}`}
+            >
+              {t.hero.ctaSecondary}
+            </a>
           </motion.div>
         </div>
       </div>

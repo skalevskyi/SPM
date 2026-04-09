@@ -27,7 +27,7 @@ export function FloatingActions() {
 
   return (
     <div
-      className="fixed right-4 z-30 md:bottom-8 md:right-6 bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)]"
+      className="fixed right-4 z-30 bottom-[var(--shell-floating-bottom-mobile)] md:bottom-8 md:right-6"
       aria-hidden
     >
       {showScrollTop && (

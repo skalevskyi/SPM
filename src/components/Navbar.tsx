@@ -177,34 +177,36 @@ export function Navbar() {
 
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/85 md:border-none md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:flex md:justify-center md:px-4 md:pt-3"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/85 max-md:flex max-md:flex-col max-md:pt-[env(safe-area-inset-top,0px)] md:border-none md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:flex md:justify-center md:px-4 md:pt-3"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
       <nav
-        className="mx-auto flex min-w-0 max-w-6xl items-center justify-between gap-4 px-4 py-4 md:w-full md:rounded-2xl md:border md:border-slate-200/80 md:bg-white/90 md:px-6 md:py-3 md:shadow-md md:backdrop-blur-sm dark:md:border-slate-700/70 dark:md:bg-slate-950/85 dark:md:shadow-lg dark:md:shadow-slate-950/45"
+        className="mx-auto flex w-full min-h-0 min-w-0 max-w-6xl items-center justify-between gap-4 px-4 max-md:h-[var(--shell-mobile-header-bar-height)] max-md:min-h-[var(--shell-mobile-header-bar-height)] max-md:max-h-[var(--shell-mobile-header-bar-height)] max-md:py-0 md:w-full md:rounded-2xl md:border md:border-slate-200/80 md:bg-white/90 md:px-6 md:py-3 md:shadow-md md:backdrop-blur-sm dark:md:border-slate-700/70 dark:md:bg-slate-950/85 dark:md:shadow-lg dark:md:shadow-slate-950/45"
         aria-label={t.nav.ariaLabel}
       >
-        <Link
-          href="#hero"
-          className="flex min-w-0 items-center gap-2 rounded-lg px-1 py-1 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
-        >
-          <img
-            src={`${BASE_PATH}/logo/favicon.svg`}
-            alt="Skalevskyi — publicité mobile"
-            loading="eager"
-            className="h-7 md:h-8 w-auto shrink-0"
-          />
-          <span className="flex min-w-0 flex-col leading-tight">
-            <span className="text-xs font-semibold tracking-[0.18em] text-slate-900 dark:text-white">
-              SKALEVSKYI
+        <div className="flex min-w-0 items-center md:contents">
+          <Link
+            href="#hero"
+            className="flex min-w-0 items-center gap-2 rounded-lg px-1 py-1 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400/70 dark:focus-visible:ring-slate-500/70"
+          >
+            <img
+              src={`${BASE_PATH}/logo/favicon.svg`}
+              alt="Skalevskyi — publicité mobile"
+              loading="eager"
+              className="h-7 md:h-8 w-auto shrink-0"
+            />
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="text-xs font-semibold tracking-[0.18em] text-slate-900 dark:text-white">
+                SKALEVSKYI
+              </span>
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                publicite mobile
+              </span>
             </span>
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              publicite mobile
-            </span>
-          </span>
-        </Link>
+          </Link>
+        </div>
 
         <ul className="hidden min-w-0 items-center justify-center md:gap-4 lg:gap-8 md:flex">
           {DESKTOP_ITEMS.map(({ key, href, icon: Icon }) => {
@@ -237,7 +239,7 @@ export function Navbar() {
           })}
         </ul>
 
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <LanguageSwitcher />
           <ThemeToggle />
         </div>

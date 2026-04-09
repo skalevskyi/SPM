@@ -8,6 +8,7 @@ import { InfoIconTooltip } from '@/components/ui/Tooltip';
 import { useCalculatorContactPrefill } from '@/context/CalculatorContactPrefillContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { buildCalculatorContactPayload } from '@/lib/contactPrefillMessage';
+import { ctaShapeBase } from '@/lib/cta-shape';
 import { ADDON_PRICES, BASE_MONTHLY_MEDIA_EUR, EXCLUSIVITY_MONTHLY_EUR_BY_PACKAGE } from '@/lib/calculator/config';
 import type { AddonEligibility } from '@/lib/calculator/types';
 import type { AddonId, CalculatorResult, DisplayMode, DurationMonths, PackageId } from '@/lib/calculator/types';
@@ -356,7 +357,7 @@ export function OfferCalculatorPanel(props: Props) {
         <a
           href="#contact"
           onClick={handleContactNavClick}
-          className={`mt-4 block w-full rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 px-4 py-2.5 text-center text-sm font-medium text-white shadow-sm shadow-sky-950/10 transition-[transform,opacity] duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 active:translate-y-px active:opacity-[0.97] dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:shadow-none dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
+          className={`mt-4 block w-full text-center ${ctaShapeBase} bg-gradient-to-b from-sky-500 to-sky-600 text-white shadow-sm shadow-sky-950/10 transition-[transform,opacity] duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 active:translate-y-px active:opacity-[0.97] dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:shadow-none dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
         >
           {t.offres.ctaEstimation}
         </a>
@@ -797,7 +798,7 @@ export function OfferCalculatorPanel(props: Props) {
           <a
             href="#contact"
             onClick={handleContactNavClick}
-            className={`mt-2 block w-full flex-shrink-0 rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 px-4 py-2.5 text-center text-sm font-medium text-white shadow-sm shadow-sky-950/10 transition-[transform,opacity] duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 active:translate-y-px active:opacity-[0.97] dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:shadow-none dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 md:mt-2 ${focusRing}`}
+            className={`mt-2 block w-full flex-shrink-0 text-center ${ctaShapeBase} bg-gradient-to-b from-sky-500 to-sky-600 text-white shadow-sm shadow-sky-950/10 transition-[transform,opacity] duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 active:translate-y-px active:opacity-[0.97] dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:shadow-none dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 md:mt-2 ${focusRing}`}
           >
             {t.offres.ctaEstimation}
           </a>

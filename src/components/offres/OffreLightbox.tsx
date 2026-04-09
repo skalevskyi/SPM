@@ -17,18 +17,8 @@ const MIN_SCALE = 1;
 const MAX_SCALE = 3;
 const ZOOM_STEP = 0.25;
 
-function isMobileViewport(): boolean {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(max-width: 767px)').matches;
-}
-
-function pinchDistance(touches: TouchList): number {
-  if (touches.length < 2) return 0;
-  return Math.hypot(
-    touches[0].clientX - touches[1].clientX,
-    touches[0].clientY - touches[1].clientY,
-  );
-}
+/** Media stage height: single controlled viewport-relative cap (svh), plus absolute max in px. */
+const MEDIA_STAGE_HEIGHT = 'min(560px, 60svh)';
 
 function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
@@ -39,7 +29,7 @@ function clamp(n: number, min: number, max: number): number {
  * tuned per theme (atmospheric, not a flat block).
  */
 const stageSurfaceClass =
-  'relative touch-pan-y select-none rounded-xl p-2 sm:p-3 ' +
+  'relative select-none rounded-xl p-2 sm:p-3 ' +
   'bg-[radial-gradient(ellipse_80%_76%_at_50%_51%,rgb(255_255_255)_0%,rgb(248_250_252)_32%,rgb(226_232_240)_100%)] ' +
   'dark:bg-[radial-gradient(ellipse_80%_76%_at_50%_50%,rgb(71_85_105/0.42)_0%,rgb(51_65_85/0.32)_44%,rgb(15_23_42)_100%)]';
 
@@ -76,19 +66,19 @@ export function OffreLightbox({
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const pointerStartX = useRef<number | null>(null);
   const scaleRef = useRef(1);
   const translateXRef = useRef(0);
   const translateYRef = useRef(0);
-  const pinchTargetRef = useRef<HTMLDivElement>(null);
   const imageClipContainerRef = useRef<HTMLDivElement>(null);
-  const twoFingerBlockingRef = useRef(false);
-  const pinchBaseRef = useRef<{ dist: number; scale: number } | null>(null);
-  const isPanGestureRef = useRef(false);
-  const panStartX = useRef(0);
-  const panStartY = useRef(0);
-  const lastTranslateX = useRef(0);
-  const lastTranslateY = useRef(0);
+  const gestureRef = useRef<HTMLDivElement>(null);
+
+  /** Active pointers for pinch (two) and pan/swipe (one). */
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchOriginRef = useRef<{ dist: number; scale: number } | null>(null);
+  const panRef = useRef<{ startX: number; startY: number; tx: number; ty: number } | null>(null);
+  const swipeStartXRef = useRef<number | null>(null);
+  /** True if two pointers were active at least once in this gesture session (blocks swipe). */
+  const pinchSessionRef = useRef(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -157,12 +147,19 @@ export function OffreLightbox({
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, handleClose, goPrev, goNext]);
 
+  /** Lock body scroll without layout jump when scrollbar disappears. */
   useEffect(() => {
     if (!isOpen) return;
-    const prev = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
+    if (scrollbarW > 0) {
+      document.body.style.paddingRight = `${scrollbarW}px`;
+    }
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
     };
   }, [isOpen]);
 
@@ -171,129 +168,136 @@ export function OffreLightbox({
     closeRef.current?.focus();
   }, [isOpen]);
 
-  useEffect(() => {
-    const el = pinchTargetRef.current;
-    if (!el || !isOpen) return;
+  const resetPointerSession = useCallback(() => {
+    pointersRef.current.clear();
+    pinchOriginRef.current = null;
+    panRef.current = null;
+    swipeStartXRef.current = null;
+    pinchSessionRef.current = false;
+  }, []);
 
-    const onTouchStart = (e: TouchEvent) => {
-      if (!isMobileViewport()) return;
-      if (e.touches.length >= 2) {
-        twoFingerBlockingRef.current = true;
-        isPanGestureRef.current = false;
-      }
-      if (e.touches.length === 2) {
-        pinchBaseRef.current = {
-          dist: pinchDistance(e.touches),
-          scale: scaleRef.current,
-        };
-        return;
-      }
-      if (e.touches.length === 1 && scaleRef.current > MIN_SCALE) {
-        isPanGestureRef.current = true;
-        panStartX.current = e.touches[0].clientX;
-        panStartY.current = e.touches[0].clientY;
-        lastTranslateX.current = translateXRef.current;
-        lastTranslateY.current = translateYRef.current;
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (!isMobileViewport()) return;
-      if (e.touches.length === 2 && pinchBaseRef.current) {
-        const d = pinchDistance(e.touches);
-        const base = pinchBaseRef.current;
-        const next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, base.scale * (d / base.dist)));
-        setScale(next);
-        e.preventDefault();
-        return;
-      }
-      if (
-        e.touches.length === 1 &&
-        isPanGestureRef.current &&
-        scaleRef.current > MIN_SCALE &&
-        !pinchBaseRef.current
-      ) {
-        const t = e.touches[0];
-        const clip = imageClipContainerRef.current;
-        const cw = clip?.clientWidth ?? 0;
-        const ch = clip?.clientHeight ?? 0;
-        const s = scaleRef.current;
-        let nx = lastTranslateX.current + (t.clientX - panStartX.current);
-        let ny = lastTranslateY.current + (t.clientY - panStartY.current);
-        const maxOffsetX = ((s - 1) * cw) / 2;
-        const maxOffsetY = ((s - 1) * ch) / 2;
-        nx = clamp(nx, -maxOffsetX, maxOffsetX);
-        ny = clamp(ny, -maxOffsetY, maxOffsetY);
-        setTranslateX(nx);
-        setTranslateY(ny);
-        e.preventDefault();
-      }
-    };
-
-    const onTouchEnd = (e: TouchEvent) => {
-      if (e.touches.length < 2) {
-        pinchBaseRef.current = null;
-      }
-      if (e.touches.length === 0) {
-        twoFingerBlockingRef.current = false;
-      } else if (e.touches.length < 2) {
-        twoFingerBlockingRef.current = false;
-      }
-      if (e.touches.length < 2) {
-        isPanGestureRef.current = false;
-      }
-    };
-
-    const opts = { passive: false, capture: true } as const;
-    el.addEventListener('touchstart', onTouchStart, opts);
-    el.addEventListener('touchmove', onTouchMove, { passive: false });
-    el.addEventListener('touchend', onTouchEnd);
-    el.addEventListener('touchcancel', onTouchEnd);
-
-    return () => {
-      el.removeEventListener('touchstart', onTouchStart, opts);
-      el.removeEventListener('touchmove', onTouchMove);
-      el.removeEventListener('touchend', onTouchEnd);
-      el.removeEventListener('touchcancel', onTouchEnd);
-    };
-  }, [isOpen, index]);
-
-  const releaseCaptureIfNeeded = (el: HTMLElement, pointerId: number) => {
-    if (el.hasPointerCapture(pointerId)) {
-      el.releasePointerCapture(pointerId);
-    }
-  };
-
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (scaleRef.current > MIN_SCALE) return;
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    pointerStartX.current = e.clientX;
-    e.currentTarget.setPointerCapture(e.pointerId);
-  };
+    const el = gestureRef.current;
+    if (!el) return;
 
-  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    releaseCaptureIfNeeded(el, e.pointerId);
-    if (twoFingerBlockingRef.current) {
-      pointerStartX.current = null;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointersRef.current.size >= 2) {
+      pinchSessionRef.current = true;
+      panRef.current = null;
+      swipeStartXRef.current = null;
+      const pts = [...pointersRef.current.values()];
+      const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      if (d > 0) {
+        pinchOriginRef.current = { dist: d, scale: scaleRef.current };
+      }
       return;
     }
+
     if (scaleRef.current > MIN_SCALE) {
-      pointerStartX.current = null;
-      return;
+      panRef.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        tx: translateXRef.current,
+        ty: translateYRef.current,
+      };
+      el.setPointerCapture(e.pointerId);
+    } else {
+      swipeStartXRef.current = e.clientX;
+      el.setPointerCapture(e.pointerId);
     }
-    if (pointerStartX.current == null) return;
-    const dx = e.clientX - pointerStartX.current;
-    pointerStartX.current = null;
-    if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
-    if (dx < 0) goNext();
-    else goPrev();
   };
 
-  const onPointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    releaseCaptureIfNeeded(el, e.pointerId);
-    pointerStartX.current = null;
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointersRef.current.has(e.pointerId)) return;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointersRef.current.size >= 2 && pinchOriginRef.current) {
+      const pts = [...pointersRef.current.values()];
+      if (pts.length < 2) return;
+      const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const base = pinchOriginRef.current;
+      if (base.dist <= 0) return;
+      const next = clamp(base.scale * (d / base.dist), MIN_SCALE, MAX_SCALE);
+      setScale(next);
+      e.preventDefault();
+      return;
+    }
+
+    if (
+      pointersRef.current.size === 1 &&
+      panRef.current &&
+      scaleRef.current > MIN_SCALE &&
+      !pinchOriginRef.current
+    ) {
+      const p = panRef.current;
+      const clip = imageClipContainerRef.current;
+      const cw = clip?.clientWidth ?? 0;
+      const ch = clip?.clientHeight ?? 0;
+      const s = scaleRef.current;
+      let nx = p.tx + (e.clientX - p.startX);
+      let ny = p.ty + (e.clientY - p.startY);
+      const maxOffsetX = ((s - 1) * cw) / 2;
+      const maxOffsetY = ((s - 1) * ch) / 2;
+      nx = clamp(nx, -maxOffsetX, maxOffsetX);
+      ny = clamp(ny, -maxOffsetY, maxOffsetY);
+      setTranslateX(nx);
+      setTranslateY(ny);
+      e.preventDefault();
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = gestureRef.current;
+    if (el?.hasPointerCapture(e.pointerId)) {
+      el.releasePointerCapture(e.pointerId);
+    }
+
+    pointersRef.current.delete(e.pointerId);
+
+    if (pointersRef.current.size < 2) {
+      pinchOriginRef.current = null;
+    }
+
+    if (pointersRef.current.size === 0) {
+      const couldSwipe =
+        !pinchSessionRef.current &&
+        scaleRef.current <= MIN_SCALE &&
+        swipeStartXRef.current != null;
+
+      if (couldSwipe) {
+        const dx = e.clientX - swipeStartXRef.current;
+        if (Math.abs(dx) >= SWIPE_THRESHOLD_PX) {
+          if (dx < 0) goNext();
+          else goPrev();
+        }
+      }
+
+      resetPointerSession();
+      return;
+    }
+
+    if (pointersRef.current.size === 1) {
+      if (scaleRef.current > MIN_SCALE) {
+        const rem = [...pointersRef.current.entries()][0];
+        if (rem) {
+          panRef.current = {
+            startX: rem[1].x,
+            startY: rem[1].y,
+            tx: translateXRef.current,
+            ty: translateYRef.current,
+          };
+          gestureRef.current?.setPointerCapture(rem[0]);
+        }
+      } else {
+        panRef.current = null;
+      }
+    }
+  };
+
+  const handlePointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    handlePointerUp(e);
   };
 
   const zoomIn = useCallback(() => {
@@ -317,6 +321,8 @@ export function OffreLightbox({
 
   const showBottomChrome = images.length > 1;
 
+  const mediaStageStyle = { height: MEDIA_STAGE_HEIGHT } as React.CSSProperties;
+
   return createPortal(
     <AnimatePresence>
       {isOpen ? (
@@ -325,7 +331,7 @@ export function OffreLightbox({
           role="dialog"
           aria-modal="true"
           aria-label={alt}
-          className="fixed inset-0 z-[100]"
+          className="fixed inset-0 z-[100] flex flex-col overflow-hidden"
           initial={{ opacity: reducedMotion ? 1 : 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: reducedMotion ? 1 : 0 }}
@@ -336,10 +342,15 @@ export function OffreLightbox({
             aria-hidden
             onClick={handleClose}
           />
-          <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 pointer-events-none">
-            <div
-              className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/[0.08] ring-1 ring-slate-900/[0.04] dark:border-slate-600/50 dark:bg-slate-900 dark:shadow-xl dark:shadow-black/25 dark:ring-white/[0.06]"
-            >
+          <div
+            className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-contain"
+            style={{
+              paddingTop: 'max(1.5rem, env(safe-area-inset-top, 0px))',
+              paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 0px))',
+            }}
+          >
+            <div className="flex min-h-full w-full flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
+              <div className="pointer-events-auto w-full max-w-4xl shrink-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/[0.08] ring-1 ring-slate-900/[0.04] dark:border-slate-600/50 dark:bg-slate-900 dark:shadow-xl dark:shadow-black/25 dark:ring-white/[0.06]">
               <header className="mb-3 flex w-full items-center justify-between gap-4 border-b border-slate-200 pb-3 dark:border-slate-600/55">
                 <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-800 dark:text-slate-300">
                   {packageId}
@@ -356,51 +367,53 @@ export function OffreLightbox({
                 </button>
               </header>
 
-              <div
-                className={stageSurfaceClass}
-                onPointerDown={onPointerDown}
-                onPointerUp={onPointerUp}
-                onPointerCancel={onPointerCancel}
-              >
+              <div className={stageSurfaceClass}>
                 <div
-                  ref={imageClipContainerRef}
-                  className="relative mx-auto h-[min(52vh,560px)] w-full max-w-full overflow-hidden"
+                  ref={gestureRef}
+                  className="touch-none"
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerCancel}
                 >
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={index}
-                      className="absolute inset-0 flex items-center justify-center"
-                      initial={{ opacity: reducedMotion ? 1 : 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: reducedMotion ? 1 : 0 }}
-                      transition={{ duration: reducedMotion ? 0 : 0.28 }}
-                    >
-                      <div
-                        ref={pinchTargetRef}
-                        className="relative h-full w-full touch-none md:touch-auto"
+                  <div
+                    ref={imageClipContainerRef}
+                    className="relative mx-auto w-full max-w-full overflow-hidden"
+                    style={mediaStageStyle}
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={index}
+                        className="absolute inset-0 flex items-center justify-center"
+                        initial={{ opacity: reducedMotion ? 1 : 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: reducedMotion ? 1 : 0 }}
+                        transition={{ duration: reducedMotion ? 0 : 0.28 }}
                       >
-                        <div
-                          className="flex h-full w-full items-center justify-center will-change-transform"
-                          style={{
-                            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
-                            transformOrigin: 'center center',
-                          }}
-                        >
-                          <div className="relative h-full w-full">
-                            <Image
-                              src={images[index]}
-                              alt={alt}
-                              fill
-                              className="object-contain"
-                              sizes="(max-width: 896px) 100vw, 896px"
-                              priority
-                              draggable={false}
-                            />
+                        <div className="relative h-full w-full">
+                          <div
+                            className="flex h-full w-full items-center justify-center will-change-transform"
+                            style={{
+                              transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+                              transformOrigin: 'center center',
+                            }}
+                          >
+                            <div className="relative h-full w-full">
+                              <Image
+                                src={images[index]}
+                                alt={alt}
+                                fill
+                                className="object-contain"
+                                sizes="(max-width: 896px) 100vw, 896px"
+                                priority
+                                draggable={false}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
 
@@ -489,6 +502,7 @@ export function OffreLightbox({
                   </button>
                 </div>
               )}
+              </div>
             </div>
           </div>
         </motion.div>

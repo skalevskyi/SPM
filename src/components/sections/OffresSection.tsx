@@ -10,6 +10,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { trackSpmEvent } from '@/lib/analytics/client';
 import { BASE_PATH } from '@/lib/base-path';
+import { ctaShapeBase } from '@/lib/cta-shape';
 import { calculateCalculator } from '@/lib/calculator';
 import type { CalculatorSelection, DisplayMode, DurationMonths } from '@/lib/calculator/types';
 
@@ -322,7 +323,7 @@ export function OffresSection() {
                     <button
                       type="button"
                       onClick={() => toggleCalculator(offer.id)}
-                      className={`block w-full rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 py-2.5 text-center text-sm font-medium text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
+                      className={`block w-full text-center ${ctaShapeBase} bg-gradient-to-b from-sky-500 to-sky-600 text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
                     >
                       {t.offres.calculer}
                     </button>

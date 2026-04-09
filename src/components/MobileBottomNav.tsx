@@ -73,10 +73,10 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
+      className="fixed bottom-0 left-0 right-0 z-40 box-border flex h-[var(--shell-mobile-bottom-occupancy)] w-full flex-col px-4 pt-[var(--shell-mobile-nav-pad-top)] pb-[var(--shell-mobile-nav-pad-bottom)] md:hidden"
       aria-label={t.mobileNav.ariaLabel}
     >
-      <div className="mx-auto grid w-full max-w-lg grid-cols-4 items-center rounded-3xl border border-slate-200/90 bg-white/80 px-2 py-3 shadow-lg shadow-slate-200/50 backdrop-blur-md dark:border-slate-700/90 dark:bg-slate-900/95 dark:shadow-slate-950/60">
+      <div className="mx-auto grid h-[var(--shell-mobile-nav-pill-height)] w-full max-w-lg shrink-0 grid-cols-4 items-center rounded-3xl border border-slate-200/90 bg-white/80 px-2 py-3 shadow-lg shadow-slate-200/50 backdrop-blur-md dark:border-slate-700/90 dark:bg-slate-900/95 dark:shadow-slate-950/60">
         {ITEMS.map(({ key, href, icon: Icon }) => {
           const isActive = mounted && activeSection === href.slice(1);
           return (

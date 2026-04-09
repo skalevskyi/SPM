@@ -2,19 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Mobile shell geometry (< md) — single source of truth.
+ * Used by: Navbar, MobileBottomNav, main padding, scroll-padding-top, FloatingActions.
+ *
+ * PWA launch contract: manifest theme/background #ffffff — root light until `html.dark`;
+ * explicit `html` background avoids gaps behind `body`.
+ */
 :root {
   --foreground: #0f172a;
   --background: #ffffff;
+
+  /* Fixed header: toolbar row (nav content vertically centered inside). */
+  --shell-mobile-header-bar-height: 4rem;
+  /* Status / notch + toolbar — matches main / scroll-padding clearance. */
+  --shell-mobile-header-total-height: calc(
+    env(safe-area-inset-top, 0px) + var(--shell-mobile-header-bar-height)
+  );
+  --shell-main-padding-top-mobile: var(--shell-mobile-header-total-height);
+
+  /* Bottom nav stack: top gap + pill (py-3 + min 44px row + py-3) + bottom safe inset. */
+  --shell-mobile-nav-pad-top: 0.5rem;
+  --shell-mobile-nav-pill-height: 4.25rem;
+  --shell-mobile-nav-pad-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  --shell-mobile-bottom-occupancy: calc(
+    var(--shell-mobile-nav-pad-top) + var(--shell-mobile-nav-pill-height) +
+      var(--shell-mobile-nav-pad-bottom)
+  );
+
+  --shell-floating-gap-above-mobile-chrome: 0.75rem;
+  --shell-floating-bottom-mobile: calc(
+    var(--shell-mobile-bottom-occupancy) + var(--shell-floating-gap-above-mobile-chrome)
+  );
+
+  --shell-desktop-scroll-padding-top: 40px;
+}
+
+html {
+  background-color: #ffffff;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--shell-main-padding-top-mobile);
+  overflow-x: hidden;
 }
 
 html.dark {
   --foreground: #f8fafc;
   --background: #0b1220;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 72px;
+  background-color: var(--background);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -25,11 +59,12 @@ html {
 
 @media (min-width: 768px) {
   html {
-    scroll-padding-top: 40px;
+    scroll-padding-top: var(--shell-desktop-scroll-padding-top);
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  overflow-x: hidden;
 }

@@ -62,9 +62,15 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  /** Aligns with `public/logo/site.webmanifest` theme/background (#fff) for PWA chrome + launch. */
+  themeColor: '#ffffff',
 };
 
-/** Mirrors `ThemeContext` resolution: `spm-theme` → legacy `*-theme` → `prefers-color-scheme`. */
+/**
+ * Mirrors `ThemeContext` resolution: `spm-theme` → legacy `*-theme` → `prefers-color-scheme`.
+ * In standalone (installed PWA), skip toggling `dark` here so the first paint can match the white
+ * manifest launch contract; `ThemeProvider` applies the class in `useLayoutEffect` on the client.
+ */
 const themeScript = `
 (function(){
   var KEY='spm-theme';
@@ -85,7 +91,10 @@ const themeScript = `
     else if(legacy==='light')dark=false;
     else dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
-  document.documentElement.classList.toggle('dark',!!dark);
+  var standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  if(!standalone){
+    document.documentElement.classList.toggle('dark',!!dark);
+  }
 })();
 `;
 

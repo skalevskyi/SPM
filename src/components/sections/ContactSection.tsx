@@ -10,6 +10,7 @@ import type { AddonId, PackageId } from '@/lib/calculator/types';
 import { buildContactPrefillMessage, type CalculatorContactPrefillPayload } from '@/lib/contactPrefillMessage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { trackSpmEvent } from '@/lib/analytics/client';
+import { ctaShapeBase } from '@/lib/cta-shape';
 import { withBasePath } from '@/lib/base-path';
 import type { CalculatorSummary, LeadApiResponse } from '@/lib/lead/types';
 
@@ -551,10 +552,7 @@ export function ContactSection() {
                     reducedMotion={reducedMotion}
                   />
                 </div>
-                <div
-                  className="absolute left-[9999px] top-0 h-px w-px overflow-hidden"
-                  aria-hidden
-                >
+                <div className="sr-only" aria-hidden>
                   <label htmlFor="contact-website">Website</label>
                   <input
                     id="contact-website"
@@ -568,7 +566,7 @@ export function ContactSection() {
                   type="submit"
                   disabled={status === 'loading'}
                   aria-busy={status === 'loading'}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-sky-500 to-sky-600 py-3 font-medium text-white shadow-sm transition-all duration-200 ease-out hover:scale-[1.02] hover:brightness-[1.03] active:scale-[0.98] focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100 disabled:hover:brightness-100 disabled:active:scale-100 dark:from-sky-500 dark:to-sky-400 dark:focus-visible:ring-offset-slate-900 dark:hover:brightness-110 dark:disabled:hover:brightness-100"
+                  className={`flex w-full items-center justify-center gap-2 ${ctaShapeBase} bg-gradient-to-b from-sky-500 to-sky-600 text-white shadow-sm transition-all duration-200 ease-out hover:scale-[1.02] hover:brightness-[1.03] active:scale-[0.98] focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100 disabled:hover:brightness-100 disabled:active:scale-100 dark:from-sky-500 dark:to-sky-400 dark:focus-visible:ring-offset-slate-900 dark:hover:brightness-110 dark:disabled:hover:brightness-100`}
                 >
                   {status === 'loading' ? (
                     <>
