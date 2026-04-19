@@ -4,8 +4,7 @@
 
 export const offres = {
   title: 'Trois niveaux de présence',
-  subtitle:
-    'Le même parcours chaque jour : BASIC (minimal), PRO (régulier), EXCLUSIVE (maximal).',
+  subtitle: 'Choisissez votre niveau de présence sur le trajet',
   rear: 'BASIC',
   side: 'PRO',
   full: 'EXCLUSIVE',

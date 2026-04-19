@@ -540,7 +540,7 @@ export function OfferCalculatorPanel(props: Props) {
           </div>
         </div>
 
-        <div className="flex h-full min-h-0 min-w-0 flex-col gap-2 rounded-2xl border border-slate-200/95 bg-slate-50 p-3 shadow-sm shadow-slate-200/60 dark:border-slate-600/55 dark:bg-slate-800 dark:shadow-md dark:shadow-black/30 md:gap-2 md:p-3 lg:p-3.5">
+        <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-slate-200/95 bg-slate-50 p-3 shadow-sm shadow-slate-200/60 dark:border-slate-600/55 dark:bg-slate-800 dark:shadow-md dark:shadow-black/30 md:gap-2 md:p-3 lg:p-3.5">
           <div
             className="mx-auto grid w-full max-w-md shrink-0 grid-cols-2 gap-2"
             role="group"
@@ -570,7 +570,7 @@ export function OfferCalculatorPanel(props: Props) {
             </button>
           </div>
 
-          <div className="min-h-0 flex-1 text-slate-600 dark:text-slate-300">
+          <div className="min-w-0 text-slate-600 dark:text-slate-300">
             {displayMode === 'monthly' ? (
               <div className="space-y-0">
                 <div className="space-y-1 pb-2 md:space-y-1.5 md:pb-2">

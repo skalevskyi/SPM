@@ -4,8 +4,7 @@
 
 export const offres = {
   title: 'Three levels of presence',
-  subtitle:
-    'The same route every day: BASIC (minimal), PRO (regular), EXCLUSIVE (maximum).',
+  subtitle: 'Choose your level of presence along the route',
   rear: 'BASIC',
   side: 'PRO',
   full: 'EXCLUSIVE',
