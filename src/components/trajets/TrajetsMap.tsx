@@ -117,6 +117,8 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   const selectedRouteIdRef = useRef(activeRouteId);
   const resolvedThemeRef = useRef(resolvedTheme);
   const appliedThemeRef = useRef<'light' | 'dark' | null>(null);
+  const targetStyleUrlRef = useRef<string | null>(null);
+  const styleRequestIdRef = useRef(0);
   const activeRouteIdRef = useRef<TrajetsRouteId | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [hasMapError, setHasMapError] = useState(false);
@@ -136,9 +138,11 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
     if (!apiKey || !containerRef.current || mapRef.current) return;
 
     try {
+      const initialStyleUrl = getStyleUrl(resolvedThemeRef.current, apiKey);
+      targetStyleUrlRef.current = initialStyleUrl;
       const map = new maplibregl.Map({
         container: containerRef.current,
-        style: getStyleUrl(resolvedThemeRef.current, apiKey),
+        style: initialStyleUrl,
         attributionControl: false,
       });
 
@@ -151,6 +155,7 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
       map.touchZoomRotate.disableRotation();
 
       const onLoad = () => {
+        setHasMapError(false);
         ensureRouteLayer(map, activeRouteRef.current, resolvedThemeRef.current);
         fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
         appliedThemeRef.current = resolvedThemeRef.current;
@@ -159,7 +164,10 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
       };
 
       map.on('load', onLoad);
-      map.on('error', () => setHasMapError(true));
+      map.on('error', () => {
+        // Runtime style/tile errors can be transient during theme/style switching.
+        // Keep fallback reserved for missing API key or true initialization failure.
+      });
 
       return () => {
         map.off('load', onLoad);
@@ -175,22 +183,29 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   useEffect(() => {
     if (!mapRef.current || !mapReady || !apiKey) return;
     const map = mapRef.current;
-    if (appliedThemeRef.current === resolvedTheme) {
+    const targetStyleUrl = getStyleUrl(resolvedTheme, apiKey);
+    if (targetStyleUrlRef.current === targetStyleUrl) {
       if (map.isStyleLoaded()) {
         ensureRouteLayer(map, activeRouteRef.current, resolvedTheme);
+        appliedThemeRef.current = resolvedTheme;
       }
       return;
     }
+    targetStyleUrlRef.current = targetStyleUrl;
+    styleRequestIdRef.current += 1;
+    const requestId = styleRequestIdRef.current;
 
     const onStyleLoad = () => {
+      if (requestId !== styleRequestIdRef.current) return;
       if (!map.isStyleLoaded()) return;
+      setHasMapError(false);
       ensureRouteLayer(map, activeRouteRef.current, resolvedTheme);
       fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
       appliedThemeRef.current = resolvedTheme;
     };
 
     map.once('style.load', onStyleLoad);
-    map.setStyle(getStyleUrl(resolvedTheme, apiKey));
+    map.setStyle(targetStyleUrl);
 
     return () => {
       map.off('style.load', onStyleLoad);
