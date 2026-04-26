@@ -78,6 +78,9 @@ export const parcours = {
     bullet3: 'Visibilité renforcée lors des arrêts et stationnements',
     note: 'Visibilité indicative basée sur les flux locaux.',
   },
+  proofTitle: 'Trajets réels enregistrés',
+  proofDescription: 'Exemples de circulation réelle sur 7 jours',
+  proofCta: 'Voir les trajets →',
   visibilityTitle: 'Estimation de visibilité locale',
   visibilityBlockTitle: 'Estimation de visibilité locale',
   visibilityIntro:

@@ -13,7 +13,8 @@ export const trajets = {
     daysLabel: 'Jours couverts',
     daysValue: '3 / 7',
     routeLabel: 'Itinéraire',
-    routeValue: 'Montpellier ↔ secteurs locaux',
+    routeValue: 'Montpellier Littoral',
+    routeValueLines: ['Montpellier', 'Littoral'],
   },
 
   map: {
@@ -38,7 +39,7 @@ export const trajets = {
   },
 
   trust:
-    'Trajets enregistrés automatiquement par GPS. Les données sont présentées comme preuve de circulation réelle, sans interface technique ni suivi en direct. Le week-end, les déplacements peuvent varier selon les besoins personnels et locaux, principalement en ville.',
+    'Trajets enregistrés automatiquement par GPS. Les données sont présentées comme preuve de circulation réelle, sans interface technique ni suivi en direct. Si l’option de diffusion le week-end n’est pas activée, les déplacements du week-end peuvent varier selon les besoins personnels et locaux, principalement en ville.',
 
   days: [
     {
@@ -54,7 +55,7 @@ export const trajets = {
       timeEnd: '07:06',
       distance: '78 km',
       duration: '47 min',
-      passages: '2 passages',
+      passages: '2 trajets',
       gpsPoints: '— GPS',
     },
     {
@@ -70,7 +71,7 @@ export const trajets = {
       timeEnd: '07:08',
       distance: '76 km',
       duration: '47 min',
-      passages: '2 passages',
+      passages: '2 trajets',
       gpsPoints: '— GPS',
     },
     {
@@ -86,7 +87,7 @@ export const trajets = {
       timeEnd: '07:02',
       distance: '79 km',
       duration: '44 min',
-      passages: '2 passages',
+      passages: '2 trajets',
       gpsPoints: '— GPS',
     },
     {
@@ -106,7 +107,7 @@ export const trajets = {
       ],
       distance: '78 km',
       duration: '110 min',
-      passages: '2 passages',
+      passages: '2 trajets',
       gpsPoints: '78 GPS',
     },
     {
@@ -126,7 +127,7 @@ export const trajets = {
       ],
       distance: '80 km',
       duration: '109 min',
-      passages: '2 passages',
+      passages: '2 trajets',
       gpsPoints: '52 GPS',
     },
     {
@@ -146,7 +147,7 @@ export const trajets = {
       ],
       distance: '35 km',
       duration: '68 min',
-      passages: '2 passages',
+      passages: '2 trajets',
       gpsPoints: '37 GPS',
     },
     {
@@ -162,7 +163,7 @@ export const trajets = {
       timeEnd: '',
       distance: '—',
       duration: '—',
-      passages: '0 passage',
+      passages: '0 trajet',
       gpsPoints: '— GPS',
     },
   ],

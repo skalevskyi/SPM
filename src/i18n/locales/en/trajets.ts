@@ -13,7 +13,8 @@ export const trajets = {
     daysLabel: 'Days covered',
     daysValue: '3 / 7',
     routeLabel: 'Route',
-    routeValue: 'Montpellier ↔ local areas',
+    routeValue: 'Montpellier Coast',
+    routeValueLines: ['Montpellier', 'Coast'],
   },
 
   map: {
@@ -38,7 +39,7 @@ export const trajets = {
   },
 
   trust:
-    'Routes are recorded automatically by GPS. Data is presented as proof of real circulation, without a technical interface or live tracking. On weekends, routes may vary depending on personal and local errands, mostly within the city.',
+    'Routes are recorded automatically by GPS. Data is presented as proof of real circulation, without a technical interface or live tracking. If the weekend display option is not activated, weekend routes may vary depending on personal and local errands, mostly within the city.',
 
   days: [
     {

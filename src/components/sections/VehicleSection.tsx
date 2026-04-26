@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Car, MapPin, MousePointerClick, Repeat, Route, Sun } from 'lucide-react';
+import Link from 'next/link';
 
 import { useLanguage } from '@/context/LanguageContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { withBasePath } from '@/lib/base-path';
 
 /** Aller: Montpellier → Port Marianne → Pérols → Carnon → La Grande-Motte */
 const ROUTE_ALLER = [
@@ -269,6 +271,25 @@ export function VehicleSection() {
                 <span className="leading-relaxed break-words">{activeContent.bullet3}</span>
               </li>
             </ul>
+            <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+              <div className="flex items-start gap-2">
+                <Route className="mt-0.5 h-4 w-4 shrink-0 text-sky-500" aria-hidden />
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+                    {t.parcours.proofTitle}
+                  </h4>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                    {t.parcours.proofDescription}
+                  </p>
+                  <Link
+                    href={withBasePath('/trajets')}
+                    className="mt-2 inline-flex text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+                  >
+                    {t.parcours.proofCta}
+                  </Link>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
 

@@ -77,6 +77,9 @@ export const parcours = {
     bullet3: 'High visibility during stops and parking',
     note: 'Indicative visibility based on local traffic flows.',
   },
+  proofTitle: 'Recorded real routes',
+  proofDescription: 'Examples of real circulation over 7 days',
+  proofCta: 'View routes →',
   visibilityTitle: 'Local visibility estimate',
   visibilityIntro:
     'Based on the real route and daily traffic.',

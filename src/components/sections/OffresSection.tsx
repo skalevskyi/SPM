@@ -212,7 +212,7 @@ export function OffresSection() {
         </motion.p>
         <motion.div
           role="note"
-          className="mx-auto mt-6 mb-6 flex max-w-sm items-center gap-4 rounded-xl border border-sky-200/70 bg-sky-50/95 px-5 py-4 shadow-md dark:border-sky-800/45 dark:bg-sky-950/40 dark:shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
+          className="mx-auto mt-6 mb-6 flex w-full items-center justify-center gap-4 rounded-xl border border-sky-200/70 bg-sky-50/95 px-5 py-4 shadow-md md:w-2/3 md:max-w-4xl dark:border-sky-800/45 dark:bg-sky-950/40 dark:shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
           initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
@@ -225,7 +225,7 @@ export function OffresSection() {
               aria-hidden
             />
           </div>
-          <div className="min-w-0 flex-1 text-left">
+          <div className="min-w-0 text-left">
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               {t.offres.pricingFirstMonthPromoLead}
             </p>

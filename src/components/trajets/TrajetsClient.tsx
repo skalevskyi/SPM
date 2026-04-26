@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, CalendarDays, Clock3, MapPinned, Repeat, Route, Ruler, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useLanguage } from '@/context/LanguageContext';
 import { withBasePath } from '@/lib/base-path';
@@ -12,19 +12,36 @@ import type { TrajetsRouteId } from '@/components/trajets/data/trajets-routes';
 export function TrajetsClient() {
   const { t } = useLanguage();
   const routeDays = t.trajets.days;
-  const [activeIndex, setActiveIndex] = useState(3);
+  const [activeIndex, setActiveIndex] = useState(0);
   const activeDay = routeDays[activeIndex];
   const activeRouteId = activeDay.id as TrajetsRouteId;
   const summaryCards = [
     { label: t.trajets.summary.distanceLabel, value: t.trajets.summary.distanceValue },
     { label: t.trajets.summary.timeLabel, value: t.trajets.summary.timeValue },
     { label: t.trajets.summary.daysLabel, value: t.trajets.summary.daysValue },
-    { label: t.trajets.summary.routeLabel, value: t.trajets.summary.routeValue },
+    {
+      label: t.trajets.summary.routeLabel,
+      value: t.trajets.summary.routeValue,
+      valueLines: t.trajets.summary.routeValueLines,
+    },
   ];
   const surfaceElevation =
     'shadow-[0_14px_34px_rgba(15,23,42,0.08)] dark:shadow-[0_18px_38px_rgba(0,0,0,0.24)]';
   const activeDayElevation =
     'shadow-[0_8px_18px_rgba(14,165,233,0.12)] dark:shadow-[0_10px_22px_rgba(14,165,233,0.16)]';
+
+  useEffect(() => {
+    const jsWeekday = new Date().getDay();
+    const mondayFirstIndex = (jsWeekday + 6) % 7;
+
+    if (routeDays[mondayFirstIndex]) {
+      setActiveIndex(mondayFirstIndex);
+      return;
+    }
+
+    const firstRecordedIndex = routeDays.findIndex((day) => day.isRecorded);
+    setActiveIndex(firstRecordedIndex >= 0 ? firstRecordedIndex : 0);
+  }, [routeDays]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
@@ -46,7 +63,7 @@ export function TrajetsClient() {
         <h1 className="mt-4 text-3xl font-bold leading-tight text-slate-900 dark:text-white md:text-4xl">
           {t.trajets.title}
         </h1>
-        <p className="mt-3 max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300 md:text-lg">
+        <p className="mt-3 max-w-5xl text-base leading-relaxed text-slate-600 dark:text-slate-300 md:text-lg xl:whitespace-nowrap">
           {t.trajets.intro}
         </p>
       </header>
@@ -55,12 +72,24 @@ export function TrajetsClient() {
         {summaryCards.map((card) => (
           <article
             key={card.label}
-            className={`rounded-xl border border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-800/60 ${surfaceElevation}`}
+            className={`min-h-[7rem] rounded-xl border border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-800/60 ${surfaceElevation}`}
           >
             <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
               {card.label}
             </p>
-            <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">{card.value}</p>
+            {card.valueLines ? (
+              <p className="mt-2 text-[1.0625rem] font-semibold leading-snug text-slate-900 dark:text-white sm:text-xl">
+                {card.valueLines.map((line) => (
+                  <span key={line} className="block whitespace-nowrap">
+                    {line}
+                  </span>
+                ))}
+              </p>
+            ) : (
+              <p className="mt-2 text-xl font-semibold leading-snug text-slate-900 dark:text-white">
+                {card.value}
+              </p>
+            )}
           </article>
         ))}
       </section>
@@ -136,20 +165,42 @@ export function TrajetsClient() {
             className={`rounded-xl border border-slate-200 bg-white/80 p-5 dark:border-slate-700 dark:bg-slate-800/60 ${surfaceElevation}`}
           >
             <div className="grid grid-cols-1 gap-4 md:grid-cols-[8rem_minmax(10rem,1fr)_minmax(7rem,1fr)_max-content] md:items-start md:gap-6">
-              <div className="min-w-0">
+              <div className="grid min-w-0 grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] items-start gap-3 md:block">
                 <p className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   <CalendarDays className="h-4 w-4 text-sky-500" aria-hidden />
                   {t.trajets.detail.dateLabel}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{activeDay.weekday}</p>
+                <p className="text-right text-sm font-medium text-slate-900 dark:text-white md:mt-1 md:text-left">
+                  {activeDay.weekday}
+                </p>
               </div>
 
-              <div className="min-w-0">
+              <div className="grid min-w-0 grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] items-start gap-3 md:block">
                 <p className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   <Route className="h-4 w-4 text-sky-500" aria-hidden />
                   {t.trajets.detail.routeLabel}
                 </p>
-                <div className="mt-1.5">
+                <div className="justify-self-end text-right md:hidden">
+                  {activeDay.isRecorded ? (
+                    <div className="grid w-fit grid-cols-[auto_0.375rem] items-center gap-x-2 justify-self-end">
+                      <span className="text-sm font-medium leading-tight text-slate-900 dark:text-white">
+                        {activeDay.routeStart}
+                      </span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-500 dark:bg-slate-400" />
+                      <span aria-hidden />
+                      <span className="mx-auto h-2.5 w-px bg-slate-300 dark:bg-slate-600" />
+                      <span className="text-sm font-medium leading-tight text-slate-900 dark:text-white">
+                        {activeDay.routeEnd}
+                      </span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-500 dark:bg-slate-400" />
+                    </div>
+                  ) : (
+                    <p className="text-sm font-medium leading-tight text-slate-500 dark:text-slate-400">
+                      {activeDay.routeStart}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-1.5 hidden md:block">
                   {activeDay.isRecorded ? (
                     <>
                       <div className="flex items-center gap-2">
@@ -174,12 +225,47 @@ export function TrajetsClient() {
                 </div>
               </div>
 
-              <div className="min-w-0">
+              <div className="grid min-w-0 grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] items-start gap-3 md:block">
                 <p className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   <Clock3 className="h-4 w-4 text-sky-500" aria-hidden />
                   {t.trajets.detail.timeLabel}
                 </p>
-                <div className="mt-1.5 text-sm">
+                <div className="justify-self-end text-right text-sm md:hidden">
+                  {'timeSlots' in activeDay ? (
+                    <>
+                      <p className="leading-tight">
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {activeDay.timeSlots[0].label}
+                        </span>{' '}
+                        <span className="font-medium text-slate-900 dark:text-white">
+                          {activeDay.timeSlots[0].value}
+                        </span>
+                      </p>
+                      <p className="mt-1 leading-tight">
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {activeDay.timeSlots[1].label}
+                        </span>{' '}
+                        <span className="font-medium text-slate-900 dark:text-white">
+                          {activeDay.timeSlots[1].value}
+                        </span>
+                      </p>
+                    </>
+                  ) : activeDay.isRecorded ? (
+                    <>
+                      <p className="font-medium leading-tight text-slate-900 dark:text-white">
+                        {activeDay.timeStart}
+                      </p>
+                      <p className="mt-1 font-medium leading-tight text-slate-900 dark:text-white">
+                        {activeDay.timeEnd}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-medium leading-tight text-slate-500 dark:text-slate-400">
+                      {activeDay.time}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-1.5 hidden text-sm md:block">
                   {'timeSlots' in activeDay ? (
                     <>
                       <p className="whitespace-nowrap leading-tight">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import maplibregl, { type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl';
 
 import { useTheme } from '@/context/ThemeContext';
@@ -8,7 +9,6 @@ import {
   trajetsRoutes,
   type TrajetsRouteId,
 } from '@/components/trajets/data/trajets-routes';
-import { trajetsLabels } from '@/components/trajets/data/trajets-labels';
 
 type TrajetsMapProps = {
   activeRouteId: TrajetsRouteId;
@@ -18,8 +18,8 @@ type TrajetsMapProps = {
 const ROUTE_SOURCE_ID = 'trajets-route-source';
 const ROUTE_UNDERLAY_LAYER_ID = 'trajets-route-underlay-layer';
 const ROUTE_MAIN_LAYER_ID = 'trajets-route-main-layer';
-const LABELS_SOURCE_ID = 'trajets-labels-source';
-const LABELS_LAYER_ID = 'trajets-labels-layer';
+const ROUTE_CHANGE_FIT_DURATION_MS = 160;
+const RESET_FIT_DURATION_MS = 220;
 
 function getStyleUrl(theme: 'light' | 'dark', apiKey: string): string {
   const styleId = theme === 'dark' ? 'dataviz-dark' : 'dataviz-light';
@@ -79,46 +79,6 @@ function ensureRouteLayer(
   }
 }
 
-function ensureLabelsLayer(map: MapLibreMap, resolvedTheme: 'light' | 'dark'): void {
-  const labelsSource = map.getSource(LABELS_SOURCE_ID) as GeoJSONSource | undefined;
-  if (!labelsSource) {
-    map.addSource(LABELS_SOURCE_ID, {
-      type: 'geojson',
-      data: trajetsLabels,
-    });
-  }
-
-  if (!map.getLayer(LABELS_LAYER_ID)) {
-    map.addLayer({
-      id: LABELS_LAYER_ID,
-      type: 'symbol',
-      source: LABELS_SOURCE_ID,
-      layout: {
-        'text-field': ['get', 'name'],
-        'text-size': 11,
-        'text-offset': [0, 0.8],
-        'text-anchor': 'top',
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-allow-overlap': true,
-        'text-ignore-placement': true,
-      },
-      paint: {
-        'text-color': resolvedTheme === 'dark' ? '#e2e8f0' : '#334155',
-        'text-halo-color': resolvedTheme === 'dark' ? '#0f172a' : '#ffffff',
-        'text-halo-width': 1.2,
-      },
-    });
-  } else {
-    map.setPaintProperty(LABELS_LAYER_ID, 'text-color', resolvedTheme === 'dark' ? '#e2e8f0' : '#334155');
-    map.setPaintProperty(
-      LABELS_LAYER_ID,
-      'text-halo-color',
-      resolvedTheme === 'dark' ? '#0f172a' : '#ffffff',
-    );
-    map.setPaintProperty(LABELS_LAYER_ID, 'text-halo-width', 1.2);
-  }
-}
-
 function fitMapToRoute(
   map: MapLibreMap,
   route: GeoJSON.Feature<GeoJSON.LineString>,
@@ -154,12 +114,23 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const activeRouteRef = useRef(activeRoute);
+  const selectedRouteIdRef = useRef(activeRouteId);
+  const resolvedThemeRef = useRef(resolvedTheme);
+  const appliedThemeRef = useRef<'light' | 'dark' | null>(null);
+  const activeRouteIdRef = useRef<TrajetsRouteId | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [hasMapError, setHasMapError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMapTransitioning, setIsMapTransitioning] = useState(false);
 
   useEffect(() => {
     activeRouteRef.current = activeRoute;
-  }, [activeRoute]);
+    selectedRouteIdRef.current = activeRouteId;
+  }, [activeRoute, activeRouteId]);
+
+  useEffect(() => {
+    resolvedThemeRef.current = resolvedTheme;
+  }, [resolvedTheme]);
 
   useEffect(() => {
     if (!apiKey || !containerRef.current || mapRef.current) return;
@@ -167,7 +138,7 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
     try {
       const map = new maplibregl.Map({
         container: containerRef.current,
-        style: getStyleUrl(resolvedTheme, apiKey),
+        style: getStyleUrl(resolvedThemeRef.current, apiKey),
         attributionControl: false,
       });
 
@@ -180,10 +151,10 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
       map.touchZoomRotate.disableRotation();
 
       const onLoad = () => {
-        if (!map.isStyleLoaded()) return;
-        ensureRouteLayer(map, activeRoute, resolvedTheme);
-        ensureLabelsLayer(map, resolvedTheme);
-        fitMapToRoute(map, activeRoute, { duration: 350 });
+        ensureRouteLayer(map, activeRouteRef.current, resolvedThemeRef.current);
+        fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
+        appliedThemeRef.current = resolvedThemeRef.current;
+        activeRouteIdRef.current = selectedRouteIdRef.current;
         setMapReady(true);
       };
 
@@ -199,16 +170,23 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
       setHasMapError(true);
       return undefined;
     }
-  }, [activeRoute, apiKey, resolvedTheme]);
+  }, [apiKey]);
 
   useEffect(() => {
     if (!mapRef.current || !mapReady || !apiKey) return;
     const map = mapRef.current;
+    if (appliedThemeRef.current === resolvedTheme) {
+      if (map.isStyleLoaded()) {
+        ensureRouteLayer(map, activeRouteRef.current, resolvedTheme);
+      }
+      return;
+    }
+
     const onStyleLoad = () => {
       if (!map.isStyleLoaded()) return;
       ensureRouteLayer(map, activeRouteRef.current, resolvedTheme);
-      ensureLabelsLayer(map, resolvedTheme);
-      fitMapToRoute(map, activeRouteRef.current, { duration: 350 });
+      fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
+      appliedThemeRef.current = resolvedTheme;
     };
 
     map.once('style.load', onStyleLoad);
@@ -222,10 +200,55 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   useEffect(() => {
     if (!mapRef.current || !mapReady) return;
     if (!mapRef.current.isStyleLoaded()) return;
+    const hasRouteLayer =
+      mapRef.current.getSource(ROUTE_SOURCE_ID) !== undefined &&
+      mapRef.current.getLayer(ROUTE_MAIN_LAYER_ID) !== undefined;
+    if (activeRouteIdRef.current === activeRouteId && hasRouteLayer) return;
+    activeRouteIdRef.current = activeRouteId;
+    mapRef.current.stop();
     ensureRouteLayer(mapRef.current, activeRoute, resolvedTheme);
-    ensureLabelsLayer(mapRef.current, resolvedTheme);
-    fitMapToRoute(mapRef.current, activeRoute, { duration: 350 });
-  }, [activeRoute, mapReady, resolvedTheme]);
+    fitMapToRoute(mapRef.current, activeRoute, { duration: ROUTE_CHANGE_FIT_DURATION_MS });
+  }, [activeRoute, activeRouteId, mapReady, resolvedTheme]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const resizeMap = () => {
+      mapRef.current?.resize();
+    };
+
+    const animationFrame = window.requestAnimationFrame(resizeMap);
+    const resizeTimeout = window.setTimeout(() => {
+      resizeMap();
+      if (mapRef.current?.isStyleLoaded()) {
+        fitMapToRoute(mapRef.current, activeRouteRef.current, { duration: RESET_FIT_DURATION_MS });
+      }
+    }, 320);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(resizeTimeout);
+    };
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    if (!isMapTransitioning) return;
+    const transitionTimeout = window.setTimeout(() => setIsMapTransitioning(false), 300);
+
+    return () => {
+      window.clearTimeout(transitionTimeout);
+    };
+  }, [isMapTransitioning]);
 
   const handleZoomIn = () => {
     if (!mapRef.current) return;
@@ -240,7 +263,13 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   const handleResetRouteView = () => {
     if (!mapRef.current || !mapReady) return;
     if (!mapRef.current.isStyleLoaded()) return;
-    fitMapToRoute(mapRef.current, activeRouteRef.current, { duration: 350 });
+    mapRef.current.stop();
+    fitMapToRoute(mapRef.current, activeRouteRef.current, { duration: RESET_FIT_DURATION_MS });
+  };
+
+  const handleToggleFullscreen = () => {
+    setIsMapTransitioning(true);
+    setIsFullscreen((current) => !current);
   };
 
   if (!apiKey || hasMapError) {
@@ -252,8 +281,22 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   }
 
   return (
-    <div className="relative h-full w-full">
-      <div ref={containerRef} className="h-full w-full rounded-xl" aria-label="Trajets map" />
+    <div
+      className={
+        isFullscreen
+          ? `fixed inset-3 z-[80] h-auto w-auto transform-gpu rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl transition-[opacity,transform,border-radius] duration-300 ease-out md:inset-6 dark:border-slate-700 dark:bg-slate-950 ${
+              isMapTransitioning ? 'scale-[0.985] opacity-95' : 'scale-100 opacity-100'
+            }`
+          : `relative h-full w-full transform-gpu transition-[opacity,transform,border-radius] duration-300 ease-out ${
+              isMapTransitioning ? 'scale-[0.985] opacity-95' : 'scale-100 opacity-100'
+            }`
+      }
+    >
+      <div
+        ref={containerRef}
+        className="h-full w-full rounded-xl transition-[border-radius] duration-300 ease-out"
+        aria-label="Trajets map"
+      />
       <div className="absolute right-3 top-3 z-10 flex flex-col gap-2">
         <button
           type="button"
@@ -279,8 +322,19 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
         >
           ⟳
         </button>
+        <button
+          type="button"
+          aria-label={isFullscreen ? 'Return to compact map view' : 'Open map in fullscreen'}
+          onClick={handleToggleFullscreen}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 bg-white/90 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800/90"
+        >
+          {isFullscreen ? (
+            <Minimize2 className="h-4 w-4" aria-hidden />
+          ) : (
+            <Maximize2 className="h-4 w-4" aria-hidden />
+          )}
+        </button>
       </div>
     </div>
   );
 }
-
