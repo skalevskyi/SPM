@@ -6,10 +6,16 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
-import { getTranslations, type Locale, type TranslationKeys } from '@/i18n';
+import {
+  getEagerFrenchTranslations,
+  loadLocaleTranslations,
+  type Locale,
+  type TranslationKeys,
+} from '@/i18n';
 
 const LOCALE_KEY = 'spm-locale';
 
@@ -41,22 +47,55 @@ function getStoredLocale(): Locale {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('fr');
+  const [t, setTranslations] = useState<TranslationKeys>(() => getEagerFrenchTranslations());
+  const localeRequestIdRef = useRef(0);
 
-  useEffect(() => {
-    const stored = getStoredLocale();
-    setLocaleState(stored);
-    document.documentElement.lang = stored === 'ua' ? 'uk' : stored;
-  }, []);
+  const applyLocale = useCallback(async (next: Locale, options?: { persist: boolean }) => {
+    localeRequestIdRef.current += 1;
+    const requestId = localeRequestIdRef.current;
 
-  const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
-    if (typeof window !== 'undefined') {
+    if (options?.persist && typeof window !== 'undefined') {
       localStorage.setItem(LOCALE_KEY, next);
+    }
+
+    if (next === 'fr') {
+      setLocaleState('fr');
+      setTranslations(getEagerFrenchTranslations());
+      document.documentElement.lang = 'fr';
+      return;
+    }
+
+    try {
+      const loadedTranslations = await loadLocaleTranslations(next);
+      if (requestId !== localeRequestIdRef.current) {
+        return;
+      }
+      setLocaleState(next);
+      setTranslations(loadedTranslations);
       document.documentElement.lang = next === 'ua' ? 'uk' : next;
+    } catch {
+      if (requestId !== localeRequestIdRef.current) {
+        return;
+      }
+
+      setLocaleState('fr');
+      setTranslations(getEagerFrenchTranslations());
+      document.documentElement.lang = 'fr';
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`[i18n] Failed to load locale "${next}", falling back to "fr".`);
+      }
     }
   }, []);
 
-  const t = useMemo(() => getTranslations(locale), [locale]);
+  useEffect(() => {
+    const stored = getStoredLocale();
+    void applyLocale(stored);
+  }, [applyLocale]);
+
+  const setLocale = useCallback((next: Locale) => {
+    void applyLocale(next, { persist: true });
+  }, [applyLocale]);
 
   const value = useMemo<LanguageContextValue>(
     () => ({ locale, setLocale, t }),

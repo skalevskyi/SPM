@@ -42,6 +42,7 @@ export function VehicleSection() {
     index: 0,
   });
   const [pausedUntil, setPausedUntil] = useState<number | null>(null);
+  const [isInViewport, setIsInViewport] = useState(false);
   const reducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
@@ -58,6 +59,21 @@ export function VehicleSection() {
   const activeLocationId = routeIds[routeStep.index] as keyof typeof t.parcours.locationContent;
   const activeContent = t.parcours.locationContent[activeLocationId];
 
+  useEffect(() => {
+    const sectionEl = document.getElementById('parcours');
+    if (!sectionEl) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(sectionEl);
+    return () => observer.disconnect();
+  }, []);
+
   /** Aller: segment under row displayIdx fills after the path passes it (top → bottom). */
   const isAllerSegmentFilled = (displayIdx: number) => displayIdx < routeStep.index;
 
@@ -72,7 +88,7 @@ export function VehicleSection() {
   };
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || !isInViewport) return;
     const id = setInterval(() => {
       const now = Date.now();
       if (pausedUntil !== null && now < pausedUntil) return;
@@ -90,7 +106,7 @@ export function VehicleSection() {
       });
     }, ROUTE_AUTOPLAY_MS);
     return () => clearInterval(id);
-  }, [pausedUntil, reducedMotion]);
+  }, [isInViewport, pausedUntil, reducedMotion]);
 
   const handleMarkerClick = (logicalIndex: number) => {
     setRouteStep((prev) => ({ ...prev, index: logicalIndex }));

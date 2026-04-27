@@ -37,6 +37,7 @@ type OffreLightboxProps = {
   isOpen: boolean;
   onClose: (finalIndex: number) => void;
   packageId: PackageId;
+  packageDisplayLabel: string;
   images: readonly string[];
   initialIndex: number;
   alt: string;
@@ -51,6 +52,7 @@ export function OffreLightbox({
   isOpen,
   onClose,
   packageId,
+  packageDisplayLabel,
   images,
   initialIndex,
   alt,
@@ -353,7 +355,7 @@ export function OffreLightbox({
               <div className="pointer-events-auto w-full max-w-4xl shrink-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/[0.08] ring-1 ring-slate-900/[0.04] dark:border-slate-600/50 dark:bg-slate-900 dark:shadow-xl dark:shadow-black/25 dark:ring-white/[0.06]">
               <header className="mb-3 flex w-full items-center justify-between gap-4 border-b border-slate-200 pb-3 dark:border-slate-600/55">
                 <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-800 dark:text-slate-300">
-                  {packageId}
+                  {packageDisplayLabel || packageId}
                 </p>
                 <button
                   ref={closeRef}

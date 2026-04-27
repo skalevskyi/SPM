@@ -1,17 +1,16 @@
 export const trajets = {
   backHome: 'Back to home',
-  badge: 'Real GPS routes recorded',
-  title: 'Real routes over 7 days',
-  intro:
-    'Real circulation between Montpellier and the coast. One vehicle. One fixed route. Every day.',
+  badge: 'Route confirmed by GPS',
+  title: 'Routes over 7 days',
+  intro: 'One vehicle. One route. Moving every day.',
 
   summary: {
     distanceLabel: 'Total distance',
-    distanceValue: '193 km',
+    distanceValue: '265 km',
     timeLabel: 'Total time',
-    timeValue: '4 h 47',
+    timeValue: '6 h 42',
     daysLabel: 'Days covered',
-    daysValue: '3 / 7',
+    daysValue: '4 / 7',
     routeLabel: 'Route',
     routeValue: 'Montpellier Coast',
     routeValueLines: ['Montpellier', 'Coast'],
@@ -19,7 +18,7 @@ export const trajets = {
 
   map: {
     title: 'GPS map',
-    description: 'Example of a real GPS route between Montpellier and the coast.',
+    description: 'Route between Montpellier and the coastline',
     fallback: 'Map unavailable at the moment.',
   },
 
@@ -38,25 +37,38 @@ export const trajets = {
     durationChipLabel: 'Duration',
   },
 
-  trust:
-    'Routes are recorded automatically by GPS. Data is presented as proof of real circulation, without a technical interface or live tracking. If the weekend display option is not activated, weekend routes may vary depending on personal and local errands, mostly within the city.',
+  trust: 'Routes recorded via GPS over 7 consecutive days.',
+  status: {
+    noMovement: {
+      title: 'No route recorded for this day',
+      description: '',
+    },
+    routeMayVary: {
+      title: 'The route may vary',
+      description: 'Regular weekend visibility is available as an additional option.',
+    },
+  },
 
   days: [
     {
       id: 'day-1',
       isRecorded: true,
       weekday: 'Monday',
-      date: '29 April 2024',
-      route: 'Montpellier → La Grande-Motte',
+      date: '27 April 2026',
+      route: 'Montpellier ↔ La Grande-Motte',
       routeStart: 'Montpellier',
       routeEnd: 'La Grande-Motte',
-      time: '06:19 — 07:06',
-      timeStart: '06:19',
-      timeEnd: '07:06',
-      distance: '78 km',
-      duration: '47 min',
+      time: '06:10–06:42 · 16:50–18:09',
+      timeStart: '06:10',
+      timeEnd: '18:09',
+      timeSlots: [
+        { label: 'Out', value: '06:10–06:42' },
+        { label: 'Back', value: '16:50–18:09' },
+      ],
+      distance: '72 km',
+      duration: '115 min',
       passages: '2 trips',
-      gpsPoints: '— GPS',
+      gpsPoints: '43 GPS',
     },
     {
       id: 'day-2',

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useTheme } from '@/context/ThemeContext';
 import { BASE_PATH } from '@/lib/base-path';
 
 type Direction = 'outbound' | 'return';
@@ -131,15 +132,18 @@ export function HeroRouteVisual({
   vehicleAriaLabel,
   locations,
 }: HeroRouteVisualProps) {
+  const { resolvedTheme } = useTheme();
   const [state, setState] = useState<{ direction: Direction; index: number; changedAt: number }>(() => ({
     direction: 'outbound',
     index: 0,
     changedAt: Date.now(),
   }));
+  const [isInViewport, setIsInViewport] = useState(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [motionAnchorLengths, setMotionAnchorLengths] = useState<Record<MotionAnchorId, number> | null>(
     null,
   );
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const routePathRef = useRef<SVGPathElement | null>(null);
   const trailHeadRef = useRef(0);
   const trailTailRef = useRef(0);
@@ -162,6 +166,21 @@ export function HeroRouteVisual({
   });
 
   useEffect(() => {
+    if (!rootRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      { threshold: 0.15 },
+    );
+
+    observer.observe(rootRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isInViewport) return;
     const id = setInterval(() => {
       setState((prev) => {
         const currentStops = getStops(prev.direction);
@@ -177,10 +196,10 @@ export function HeroRouteVisual({
       });
     }, STEP_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [isInViewport]);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || !isInViewport) return;
     let frameId = 0;
     let lastStateUpdateMs = 0;
     const NOW_UPDATE_INTERVAL_MS = 80;
@@ -194,7 +213,7 @@ export function HeroRouteVisual({
     };
     frameId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frameId);
-  }, [reducedMotion]);
+  }, [reducedMotion, isInViewport]);
 
   useEffect(() => {
     const path = routePathRef.current;
@@ -282,7 +301,7 @@ export function HeroRouteVisual({
   }, [activeMotionAnchor, nextMotionAnchor, segmentProgress, motionAnchorLengths, totalPathLength]);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || !isInViewport) return;
     let frameId = 0;
     const hideTrailSegments = () => {
       for (let i = 0; i < TRAIL_SEGMENT_COUNT; i += 1) {
@@ -460,6 +479,7 @@ export function HeroRouteVisual({
     return () => window.cancelAnimationFrame(frameId);
   }, [
     reducedMotion,
+    isInViewport,
     state.direction,
     state.changedAt,
     motionAnchorLengths,
@@ -477,7 +497,10 @@ export function HeroRouteVisual({
   };
 
   return (
-    <div className="relative mx-auto aspect-[4/3] w-full max-w-xl overflow-hidden rounded-[2.6rem] [--hero-route-base:rgb(125_139_158)] [--hero-route-trail:rgba(56,189,248,0.5)] [--hero-trail-opacity-head:0.8] [--hero-trail-opacity-tail:0.1] [--hero-trail-stroke-width:2.3] [--hero-marker-fill:rgb(255_255_255)] [--hero-marker-stroke:rgb(59_130_246)] [--hero-marker-glow-opacity-active:0.34] [--hero-marker-glow-opacity-inactive:0.24] [--hero-label-fill:rgb(71_85_105)] [--hero-label-stroke:rgba(15,23,42,0.56)] [--hero-label-stroke-width:0.2] [--hero-vehicle-shadow:rgba(2,6,23,0.22)] [--hero-vehicle-body:#ffffff] [--hero-vehicle-cabin:#e2e8f0] [--hero-vehicle-glass:#94a3b8] [--hero-vehicle-wheel:#0f172a] [--hero-vehicle-wheel-center:#cbd5f5] dark:[--hero-route-base:rgb(174_187_204)] dark:[--hero-route-trail:rgba(125,211,252,0.62)] dark:[--hero-trail-opacity-head:0.88] dark:[--hero-trail-opacity-tail:0.12] dark:[--hero-trail-stroke-width:2.3] dark:[--hero-marker-fill:rgb(15_23_42)] dark:[--hero-marker-stroke:rgb(59_130_246)] dark:[--hero-marker-glow-opacity-active:0.34] dark:[--hero-marker-glow-opacity-inactive:0.24] dark:[--hero-label-fill:rgb(148_163_184)] dark:[--hero-label-stroke:rgba(15,23,42,0.6)] dark:[--hero-label-stroke-width:0.18] dark:[--hero-vehicle-shadow:rgba(2,6,23,0.34)] dark:[--hero-vehicle-body:#f8fafc] dark:[--hero-vehicle-cabin:#cbd5e1] dark:[--hero-vehicle-glass:#94a3b8] dark:[--hero-vehicle-wheel:#0f172a] dark:[--hero-vehicle-wheel-center:#e2e8f0]">
+    <div
+      ref={rootRef}
+      className="relative mx-auto aspect-[4/3] w-full max-w-xl overflow-hidden rounded-[2.6rem] [--hero-route-base:rgb(125_139_158)] [--hero-route-trail:rgba(56,189,248,0.5)] [--hero-trail-opacity-head:0.8] [--hero-trail-opacity-tail:0.1] [--hero-trail-stroke-width:2.3] [--hero-marker-fill:rgb(255_255_255)] [--hero-marker-stroke:rgb(59_130_246)] [--hero-marker-glow-opacity-active:0.34] [--hero-marker-glow-opacity-inactive:0.24] [--hero-label-fill:rgb(71_85_105)] [--hero-label-stroke:rgba(15,23,42,0.56)] [--hero-label-stroke-width:0.2] [--hero-vehicle-shadow:rgba(2,6,23,0.22)] [--hero-vehicle-body:#ffffff] [--hero-vehicle-cabin:#e2e8f0] [--hero-vehicle-glass:#94a3b8] [--hero-vehicle-wheel:#0f172a] [--hero-vehicle-wheel-center:#cbd5f5] dark:[--hero-route-base:rgb(174_187_204)] dark:[--hero-route-trail:rgba(125,211,252,0.62)] dark:[--hero-trail-opacity-head:0.88] dark:[--hero-trail-opacity-tail:0.12] dark:[--hero-trail-stroke-width:2.3] dark:[--hero-marker-fill:rgb(15_23_42)] dark:[--hero-marker-stroke:rgb(59_130_246)] dark:[--hero-marker-glow-opacity-active:0.34] dark:[--hero-marker-glow-opacity-inactive:0.24] dark:[--hero-label-fill:rgb(148_163_184)] dark:[--hero-label-stroke:rgba(15,23,42,0.6)] dark:[--hero-label-stroke-width:0.18] dark:[--hero-vehicle-shadow:rgba(2,6,23,0.34)] dark:[--hero-vehicle-body:#f8fafc] dark:[--hero-vehicle-cabin:#cbd5e1] dark:[--hero-vehicle-glass:#94a3b8] dark:[--hero-vehicle-wheel:#0f172a] dark:[--hero-vehicle-wheel-center:#e2e8f0]"
+    >
       <div className="absolute inset-x-0 top-[13%] bottom-[13%] overflow-hidden rounded-full" aria-hidden>
         <svg viewBox="0 0 180 100" className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
           <defs>
@@ -499,22 +522,12 @@ export function HeroRouteVisual({
           </defs>
           <g mask="url(#hero-map-capsule-mask)">
             <image
-              href={MAP_LIGHT_SRC}
+              href={resolvedTheme === 'dark' ? MAP_DARK_SRC : MAP_LIGHT_SRC}
               x="0"
               y="0"
               width="180"
               height="100"
               preserveAspectRatio="none"
-              className="dark:hidden"
-            />
-            <image
-              href={MAP_DARK_SRC}
-              x="0"
-              y="0"
-              width="180"
-              height="100"
-              preserveAspectRatio="none"
-              className="hidden dark:block"
             />
           </g>
         </svg>

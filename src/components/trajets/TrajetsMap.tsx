@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
-import maplibregl, { type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { GeoJSONSource, LngLatBoundsLike, Map as MapLibreMap } from 'maplibre-gl';
 
 import { useTheme } from '@/context/ThemeContext';
 import {
@@ -87,7 +87,7 @@ function fitMapToRoute(
   map.fitBounds(getRouteBounds(route), { padding: 36, duration: options.duration });
 }
 
-function getRouteBounds(route: GeoJSON.Feature<GeoJSON.LineString>): maplibregl.LngLatBoundsLike {
+function getRouteBounds(route: GeoJSON.Feature<GeoJSON.LineString>): LngLatBoundsLike {
   const [firstLon, firstLat] = route.geometry.coordinates[0];
   let minLon = firstLon;
   let maxLon = firstLon;
@@ -111,6 +111,7 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   const { resolvedTheme } = useTheme();
   const activeRoute = useMemo(() => trajetsRoutes[activeRouteId], [activeRouteId]);
+  const viewportTriggerRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const activeRouteRef = useRef(activeRoute);
@@ -122,8 +123,14 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   const activeRouteIdRef = useRef<TrajetsRouteId | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [hasMapError, setHasMapError] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMapTransitioning, setIsMapTransitioning] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     activeRouteRef.current = activeRoute;
@@ -135,50 +142,82 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
   }, [resolvedTheme]);
 
   useEffect(() => {
-    if (!apiKey || !containerRef.current || mapRef.current) return;
+    if (!hasMounted || !viewportTriggerRef.current) return;
 
-    try {
-      const initialStyleUrl = getStyleUrl(resolvedThemeRef.current, apiKey);
-      targetStyleUrlRef.current = initialStyleUrl;
-      const map = new maplibregl.Map({
-        container: containerRef.current,
-        style: initialStyleUrl,
-        attributionControl: false,
-      });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInViewport(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '120px 0px' },
+    );
 
-      mapRef.current = map;
-      map.scrollZoom.disable();
-      map.doubleClickZoom.disable();
-      map.boxZoom.disable();
-      map.keyboard.disable();
-      map.dragRotate.disable();
-      map.touchZoomRotate.disableRotation();
+    observer.observe(viewportTriggerRef.current);
+    return () => observer.disconnect();
+  }, [hasMounted]);
 
-      const onLoad = () => {
-        setHasMapError(false);
-        ensureRouteLayer(map, activeRouteRef.current, resolvedThemeRef.current);
-        fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
-        appliedThemeRef.current = resolvedThemeRef.current;
-        activeRouteIdRef.current = selectedRouteIdRef.current;
-        setMapReady(true);
-      };
+  useEffect(() => {
+    if (!apiKey || !hasMounted || !isInViewport || !containerRef.current || mapRef.current) return;
+    let isDisposed = false;
+    let initializedMap: MapLibreMap | null = null;
+    let onLoad: (() => void) | null = null;
 
-      map.on('load', onLoad);
-      map.on('error', () => {
-        // Runtime style/tile errors can be transient during theme/style switching.
-        // Keep fallback reserved for missing API key or true initialization failure.
-      });
+    const initMap = async () => {
+      try {
+        const maplibreModule = await import('maplibre-gl');
+        if (isDisposed || !containerRef.current || mapRef.current) return;
 
-      return () => {
-        map.off('load', onLoad);
-        map.remove();
-        mapRef.current = null;
-      };
-    } catch {
-      setHasMapError(true);
-      return undefined;
-    }
-  }, [apiKey]);
+        const initialStyleUrl = getStyleUrl(resolvedThemeRef.current, apiKey);
+        targetStyleUrlRef.current = initialStyleUrl;
+        const map = new maplibreModule.default.Map({
+          container: containerRef.current,
+          style: initialStyleUrl,
+          attributionControl: false,
+        });
+
+        initializedMap = map;
+        mapRef.current = map;
+        map.scrollZoom.disable();
+        map.doubleClickZoom.disable();
+        map.boxZoom.disable();
+        map.keyboard.disable();
+        map.dragRotate.disable();
+        map.touchZoomRotate.disableRotation();
+
+        onLoad = () => {
+          setHasMapError(false);
+          ensureRouteLayer(map, activeRouteRef.current, resolvedThemeRef.current);
+          fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
+          appliedThemeRef.current = resolvedThemeRef.current;
+          activeRouteIdRef.current = selectedRouteIdRef.current;
+          setMapReady(true);
+        };
+
+        map.on('load', onLoad);
+        map.on('error', () => {
+          // Runtime style/tile errors can be transient during theme/style switching.
+          // Keep fallback reserved for missing API key or true initialization failure.
+        });
+      } catch {
+        if (!isDisposed) {
+          setHasMapError(true);
+        }
+      }
+    };
+
+    void initMap();
+
+    return () => {
+      isDisposed = true;
+      if (initializedMap && onLoad) {
+        initializedMap.off('load', onLoad);
+      }
+      initializedMap?.remove();
+      mapRef.current = null;
+    };
+  }, [apiKey, hasMounted, isInViewport]);
 
   useEffect(() => {
     if (!mapRef.current || !mapReady || !apiKey) return;
@@ -297,6 +336,7 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
 
   return (
     <div
+      ref={viewportTriggerRef}
       className={
         isFullscreen
           ? `fixed inset-3 z-[80] h-auto w-auto transform-gpu rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl transition-[opacity,transform,border-radius] duration-300 ease-out md:inset-6 dark:border-slate-700 dark:bg-slate-950 ${
@@ -312,6 +352,9 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
         className="h-full w-full rounded-xl transition-[border-radius] duration-300 ease-out"
         aria-label="Trajets map"
       />
+      {!mapReady ? (
+        <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-slate-100/80 via-slate-50/70 to-slate-100/80 dark:from-slate-900/70 dark:via-slate-900/40 dark:to-slate-900/70" />
+      ) : null}
       <div
         className={
           isFullscreen

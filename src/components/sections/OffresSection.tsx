@@ -17,20 +17,20 @@ import type { CalculatorSelection, DisplayMode, DurationMonths } from '@/lib/cal
 const OFFRES = [
   {
     id: 'BASIC' as const,
-    images: [`${BASE_PATH}/vehicle/basic-1.png`, `${BASE_PATH}/vehicle/basic-2.png`] as const,
+    images: [`${BASE_PATH}/vehicle/basic-1.webp`, `${BASE_PATH}/vehicle/basic-2.webp`] as const,
     featured: false,
   },
   {
     id: 'PRO' as const,
-    images: [`${BASE_PATH}/vehicle/pro-1.png`, `${BASE_PATH}/vehicle/pro-2.png`] as const,
+    images: [`${BASE_PATH}/vehicle/pro-1.webp`, `${BASE_PATH}/vehicle/pro-2.webp`] as const,
     featured: true,
   },
   {
     id: 'EXCLUSIVE' as const,
     images: [
-      `${BASE_PATH}/vehicle/exclusive-1.png`,
-      `${BASE_PATH}/vehicle/exclusive-2.png`,
-      `${BASE_PATH}/vehicle/exclusive-3.png`,
+      `${BASE_PATH}/vehicle/exclusive-1.webp`,
+      `${BASE_PATH}/vehicle/exclusive-2.webp`,
+      `${BASE_PATH}/vehicle/exclusive-3.webp`,
     ] as const,
     featured: false,
   },
@@ -267,6 +267,12 @@ export function OffresSection() {
                 : offer.id === 'PRO'
                   ? t.offres.altSide
                   : t.offres.altFull;
+            const ctaLabel =
+              offer.id === 'BASIC'
+                ? t.offres.calculerBasic ?? t.offres.calculer
+                : offer.id === 'PRO'
+                  ? t.offres.calculerPro ?? t.offres.calculer
+                  : t.offres.calculerExclusive ?? t.offres.calculer;
             return (
               <motion.article
                 key={offer.id}
@@ -312,6 +318,7 @@ export function OffresSection() {
 
                     <OffreImageCarousel
                       packageId={offer.id}
+                      packageDisplayLabel={name}
                       images={offer.images}
                       alt={alt}
                       imageCarouselLabel={t.offres.imageCarouselLabel}
@@ -324,20 +331,44 @@ export function OffresSection() {
                       {description}
                     </p>
 
-                    <ul className="mt-5 space-y-2">
-                      {benefits.map((benefit, bi) => (
-                        <li
-                          key={bi}
-                          className="flex gap-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
-                        >
-                          <span
-                            className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
-                            aria-hidden
-                          />
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {offer.id !== 'EXCLUSIVE' ? (
+                      <ul className="mt-5 space-y-2">
+                        {benefits.map((benefit, bi) => (
+                          <li
+                            key={bi}
+                            className="flex gap-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+                          >
+                            <span
+                              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                              aria-hidden
+                            />
+                            <span>{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+
+                    {offer.id === 'EXCLUSIVE' ? (
+                      <div className="mt-3 rounded-lg border border-sky-200/80 bg-sky-50/70 p-3 dark:border-sky-800/50 dark:bg-sky-950/25">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">
+                          {t.offres.premium360Title}
+                        </p>
+                        <ul className="mt-2 space-y-1.5">
+                          {t.offres.premium360Rows.map((line) => (
+                            <li
+                              key={line}
+                              className="flex gap-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300"
+                            >
+                              <span
+                                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                                aria-hidden
+                              />
+                              <span>{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
 
                     {offer.id === 'EXCLUSIVE' ? (
                       <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
@@ -356,7 +387,7 @@ export function OffresSection() {
                       onClick={() => toggleCalculator(offer.id)}
                       className={`block w-full text-center ${ctaShapeBase} bg-gradient-to-b from-sky-500 to-sky-600 text-white transition-colors duration-150 ease-out hover:from-sky-600 hover:to-sky-700 active:from-sky-600 active:to-sky-700 dark:bg-gradient-to-b dark:from-sky-500 dark:to-sky-400 dark:hover:from-sky-500 dark:hover:to-sky-300 dark:active:from-sky-500 dark:active:to-sky-600 ${focusRing}`}
                     >
-                      {t.offres.calculer}
+                      {ctaLabel}
                     </button>
                   </div>
                 </div>

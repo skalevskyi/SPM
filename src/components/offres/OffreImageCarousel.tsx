@@ -14,6 +14,7 @@ const focusRing =
 
 type OffreImageCarouselProps = {
   packageId: PackageId;
+  packageDisplayLabel: string;
   images: readonly string[];
   alt: string;
   imageCarouselLabel: string;
@@ -24,6 +25,7 @@ type OffreImageCarouselProps = {
 
 export function OffreImageCarousel({
   packageId,
+  packageDisplayLabel,
   images,
   alt,
   imageCarouselLabel,
@@ -77,6 +79,7 @@ export function OffreImageCarousel({
         isOpen={lightboxOpen}
         onClose={handleLightboxClose}
         packageId={packageId}
+        packageDisplayLabel={packageDisplayLabel}
         images={images}
         initialIndex={0}
         alt={alt}

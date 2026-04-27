@@ -13,9 +13,9 @@ export const DISPLAY_MODES = ['monthly', 'contract_total'] as const satisfies Di
 
 // ===== Base media fees (ex-tax / HT as per calculator spec) =====
 export const BASE_MONTHLY_MEDIA_EUR: Record<PackageId, number> = {
-  BASIC: 300,
-  PRO: 490,
-  EXCLUSIVE: 690,
+  BASIC: 350,
+  PRO: 550,
+  EXCLUSIVE: 900,
 };
 
 // ===== Duration multipliers (applied to base media fee only) =====

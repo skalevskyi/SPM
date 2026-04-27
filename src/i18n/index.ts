@@ -3,18 +3,16 @@
  */
 
 import { fr } from './locales/fr';
-import { en } from './locales/en';
-import { ua } from './locales/ua';
+import { getEagerFrenchTranslations, loadLocaleTranslations } from './load-locale';
 
 import type { Locale, TranslationKeys } from './types';
 
-const locales = { fr, en, ua } as const;
-
 export type { Locale, TranslationKeys };
+export { getEagerFrenchTranslations, loadLocaleTranslations };
 
 export function getTranslations(locale: Locale): TranslationKeys {
-  if (locale === 'fr' || locale === 'en' || locale === 'ua') {
-    return locales[locale] as TranslationKeys;
+  if (locale === 'fr') {
+    return fr as TranslationKeys;
   }
   return fr as TranslationKeys;
 }

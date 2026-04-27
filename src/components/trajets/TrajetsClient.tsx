@@ -1,20 +1,45 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, CalendarDays, Clock3, MapPinned, Repeat, Route, Ruler, ShieldCheck } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowLeft, CalendarDays, Clock3, Info, MapPinned, Repeat, Route, Ruler, ShieldCheck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useLanguage } from '@/context/LanguageContext';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { withBasePath } from '@/lib/base-path';
-import { TrajetsMap } from '@/components/trajets/TrajetsMap';
 import type { TrajetsRouteId } from '@/components/trajets/data/trajets-routes';
+
+function TrajetsMapSkeleton() {
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-100/80 dark:border-slate-700 dark:bg-slate-900/40">
+      <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-slate-200/70 via-slate-100/40 to-slate-200/70 dark:from-slate-800/70 dark:via-slate-900/30 dark:to-slate-800/70" />
+    </div>
+  );
+}
+
+const TrajetsMap = dynamic(
+  () => import('@/components/trajets/TrajetsMap').then((module) => module.TrajetsMap),
+  {
+    ssr: false,
+    loading: () => <TrajetsMapSkeleton />,
+  },
+);
 
 export function TrajetsClient() {
   const { t } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const routeDays = t.trajets.days;
   const [activeIndex, setActiveIndex] = useState(0);
+  const previousActiveIndexRef = useRef(0);
   const activeDay = routeDays[activeIndex];
   const activeRouteId = activeDay.id as TrajetsRouteId;
+  const statusType = !activeDay.isRecorded ? 'noMovement' : activeDay.id === 'day-6' ? 'routeMayVary' : null;
+  const statusContent = statusType ? t.trajets.status[statusType] : null;
+  const previousActiveIndex = previousActiveIndexRef.current;
+  const statusDirection =
+    previousActiveIndex < activeIndex ? 'down' : previousActiveIndex > activeIndex ? 'up' : 'down';
   const summaryCards = [
     { label: t.trajets.summary.distanceLabel, value: t.trajets.summary.distanceValue },
     { label: t.trajets.summary.timeLabel, value: t.trajets.summary.timeValue },
@@ -42,6 +67,10 @@ export function TrajetsClient() {
     const firstRecordedIndex = routeDays.findIndex((day) => day.isRecorded);
     setActiveIndex(firstRecordedIndex >= 0 ? firstRecordedIndex : 0);
   }, [routeDays]);
+
+  useEffect(() => {
+    previousActiveIndexRef.current = activeIndex;
+  }, [activeIndex]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
@@ -332,14 +361,64 @@ export function TrajetsClient() {
         </div>
       </section>
 
-      <section
+      <AnimatePresence initial={false}>
+        {statusType && statusContent ? (
+          <motion.div
+            key="status-row"
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="mt-4"
+          >
+            <div
+              className={`rounded-xl border border-slate-200 bg-white/80 p-3 dark:border-slate-700 dark:bg-slate-900/45 ${surfaceElevation}`}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={statusType}
+                  initial={
+                    reducedMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, y: statusDirection === 'down' ? -6 : 6 }
+                  }
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={
+                    reducedMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, y: statusDirection === 'down' ? 6 : -6 }
+                  }
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                >
+                  <div className="flex items-start gap-2">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" aria-hidden />
+                    <div>
+                      <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                        {statusContent.title}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                        {statusContent.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <motion.section
+        layout
+        transition={{ duration: reducedMotion ? 0.2 : 0.3, ease: 'easeOut' }}
         className={`mt-6 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800/50 ${surfaceElevation}`}
       >
         <div className="flex items-start gap-2">
           <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-sky-500" aria-hidden />
           <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{t.trajets.trust}</p>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

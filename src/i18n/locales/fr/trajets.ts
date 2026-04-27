@@ -1,17 +1,16 @@
 export const trajets = {
   backHome: 'Retour à l’accueil',
-  badge: 'Trajets GPS réels enregistrés',
-  title: 'Trajets réels sur 7 jours',
-  intro:
-    'Circulation réelle entre Montpellier et le littoral. Un véhicule. Un itinéraire fixe. Tous les jours.',
+  badge: 'Trajet confirmé par GPS',
+  title: 'Trajets sur 7 jours',
+  intro: 'Un véhicule. Un trajet. En mouvement chaque jour.',
 
   summary: {
     distanceLabel: 'Distance totale',
-    distanceValue: '193 km',
+    distanceValue: '265 km',
     timeLabel: 'Temps total',
-    timeValue: '4 h 47',
+    timeValue: '6 h 42',
     daysLabel: 'Jours couverts',
-    daysValue: '3 / 7',
+    daysValue: '4 / 7',
     routeLabel: 'Itinéraire',
     routeValue: 'Montpellier Littoral',
     routeValueLines: ['Montpellier', 'Littoral'],
@@ -19,7 +18,7 @@ export const trajets = {
 
   map: {
     title: 'Carte GPS',
-    description: 'Exemple de trajet GPS réel entre Montpellier et le littoral.',
+    description: 'Trajet entre Montpellier et le littoral',
     fallback: 'Carte indisponible pour le moment.',
   },
 
@@ -38,25 +37,38 @@ export const trajets = {
     durationChipLabel: 'Durée',
   },
 
-  trust:
-    'Trajets enregistrés automatiquement par GPS. Les données sont présentées comme preuve de circulation réelle, sans interface technique ni suivi en direct. Si l’option de diffusion le week-end n’est pas activée, les déplacements du week-end peuvent varier selon les besoins personnels et locaux, principalement en ville.',
+  trust: 'Données enregistrées via GPS sur 7 jours consécutifs.',
+  status: {
+    noMovement: {
+      title: 'Aucun trajet enregistré ce jour-là',
+      description: '',
+    },
+    routeMayVary: {
+      title: 'Le trajet peut varier',
+      description: 'La diffusion régulière le week-end est disponible en option.',
+    },
+  },
 
   days: [
     {
       id: 'day-1',
       isRecorded: true,
       weekday: 'Lundi',
-      date: '29 avril 2024',
-      route: 'Montpellier → La Grande-Motte',
+      date: '27 avril 2026',
+      route: 'Montpellier ↔ La Grande-Motte',
       routeStart: 'Montpellier',
       routeEnd: 'La Grande-Motte',
-      time: '06:19 — 07:06',
-      timeStart: '06:19',
-      timeEnd: '07:06',
-      distance: '78 km',
-      duration: '47 min',
+      time: '06:10–06:42 · 16:50–18:09',
+      timeStart: '06:10',
+      timeEnd: '18:09',
+      timeSlots: [
+        { label: 'Aller', value: '06:10–06:42' },
+        { label: 'Retour', value: '16:50–18:09' },
+      ],
+      distance: '72 km',
+      duration: '115 min',
       passages: '2 trajets',
-      gpsPoints: '— GPS',
+      gpsPoints: '43 GPS',
     },
     {
       id: 'day-2',

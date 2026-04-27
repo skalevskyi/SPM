@@ -1,4 +1,5 @@
 import {
+  route20260427,
   route20260423,
   route20260424,
   route20260425,
@@ -46,7 +47,7 @@ function buildRoute(name: string): RouteFeature {
 }
 
 export const trajetsRoutes: Record<TrajetsRouteId, RouteFeature> = {
-  'day-1': buildRoute('Route day 1'),
+  'day-1': route20260427,
   'day-2': buildRoute('Route day 2'),
   'day-3': buildRoute('Route day 3'),
   'day-4': route20260423,

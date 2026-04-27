@@ -326,6 +326,13 @@ export function OfferCalculatorPanel(props: Props) {
     packageFeatured,
     formatEur,
   } = props;
+  const calculatorEstimatedCostCpmValue =
+    packageId === 'BASIC'
+      ? t.offres.calculatorEstimatedCostCpmValueBasic ?? t.offres.calculatorEstimatedCostCpmValue
+      : packageId === 'PRO'
+        ? t.offres.calculatorEstimatedCostCpmValuePro ?? t.offres.calculatorEstimatedCostCpmValue
+        : t.offres.calculatorEstimatedCostCpmValueExclusive ??
+          t.offres.calculatorEstimatedCostCpmValue;
 
   const handleContactNavClick = () => {
     if (result.ok) {
@@ -586,7 +593,7 @@ export function OfferCalculatorPanel(props: Props) {
                     )}
                     {ladderRow(
                       t.offres.calculatorEstimatedCostCpmLabel,
-                      t.offres.calculatorEstimatedCostCpmValue,
+                      calculatorEstimatedCostCpmValue,
                       'text-[11px] md:text-xs text-slate-500/80 dark:text-slate-400/80 text-right',
                       'text-[11px] md:text-xs text-slate-500 dark:text-slate-400',
                     )}
