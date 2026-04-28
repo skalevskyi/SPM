@@ -18,7 +18,7 @@ export function HeroSection() {
   const { t } = useLanguage();
 
   const motionOpts = {
-    initial: { opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 },
+    initial: { opacity: 1, y: reducedMotion ? 0 : 8 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: reducedMotion ? 0 : 0.4 },
   };
@@ -56,7 +56,7 @@ export function HeroSection() {
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch md:gap-x-14 md:gap-y-4">
           <motion.div
             className="flex max-w-2xl flex-col gap-4 md:col-start-1 md:h-full md:justify-between"
-            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 16 }}
+            initial={{ opacity: 1, y: reducedMotion ? 0 : 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.1 }}
           >
@@ -106,7 +106,7 @@ export function HeroSection() {
           {/* Premium visual area: desktop right column */}
           <motion.div
             className="relative flex w-full flex-col items-center -mt-6 md:col-start-2 md:-mt-14"
-            initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 20 }}
+            initial={{ opacity: 1, y: reducedMotion ? 0 : 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.06 }}
           >

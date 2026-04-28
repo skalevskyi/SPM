@@ -233,21 +233,68 @@ export function TrajetsMap({ activeRouteId, fallbackText }: TrajetsMapProps) {
     targetStyleUrlRef.current = targetStyleUrl;
     styleRequestIdRef.current += 1;
     const requestId = styleRequestIdRef.current;
+    let didRestoreForRequest = false;
+
+    const restoreRouteForCurrentStyle = (options: { allowFit: boolean; force: boolean }): boolean => {
+      if (requestId !== styleRequestIdRef.current) return false;
+      if (!mapRef.current || mapRef.current !== map) return false;
+      if (!map.isStyleLoaded()) return false;
+
+      const routeToApply = activeRouteRef.current;
+      if (!routeToApply) return false;
+
+      const hasRouteSource = map.getSource(ROUTE_SOURCE_ID) !== undefined;
+      const hasMainRouteLayer = map.getLayer(ROUTE_MAIN_LAYER_ID) !== undefined;
+      const hasUnderlayRouteLayer = map.getLayer(ROUTE_UNDERLAY_LAYER_ID) !== undefined;
+      const needsReapply =
+        !hasRouteSource ||
+        !hasMainRouteLayer ||
+        !hasUnderlayRouteLayer ||
+        appliedThemeRef.current !== resolvedTheme;
+
+      if (!options.force && !needsReapply) return false;
+
+      setHasMapError(false);
+      ensureRouteLayer(map, routeToApply, resolvedTheme);
+      if (options.allowFit) {
+        fitMapToRoute(map, routeToApply, { duration: 0 });
+      }
+      appliedThemeRef.current = resolvedTheme;
+      activeRouteIdRef.current = selectedRouteIdRef.current;
+      didRestoreForRequest = true;
+      return true;
+    };
 
     const onStyleLoad = () => {
-      if (requestId !== styleRequestIdRef.current) return;
-      if (!map.isStyleLoaded()) return;
-      setHasMapError(false);
-      ensureRouteLayer(map, activeRouteRef.current, resolvedTheme);
-      fitMapToRoute(map, activeRouteRef.current, { duration: 0 });
-      appliedThemeRef.current = resolvedTheme;
+      if (restoreRouteForCurrentStyle({ allowFit: true, force: true })) {
+        map.off('styledata', onStyleData);
+        map.off('idle', onIdle);
+      }
+    };
+
+    const onStyleData = () => {
+      if (!didRestoreForRequest && restoreRouteForCurrentStyle({ allowFit: false, force: false })) {
+        map.off('styledata', onStyleData);
+        map.off('idle', onIdle);
+      }
+    };
+
+    const onIdle = () => {
+      if (!didRestoreForRequest && restoreRouteForCurrentStyle({ allowFit: false, force: false })) {
+        map.off('styledata', onStyleData);
+        map.off('idle', onIdle);
+      }
     };
 
     map.once('style.load', onStyleLoad);
+    map.on('styledata', onStyleData);
+    map.on('idle', onIdle);
     map.setStyle(targetStyleUrl);
 
     return () => {
       map.off('style.load', onStyleLoad);
+      map.off('styledata', onStyleData);
+      map.off('idle', onIdle);
     };
   }, [apiKey, mapReady, resolvedTheme]);
 

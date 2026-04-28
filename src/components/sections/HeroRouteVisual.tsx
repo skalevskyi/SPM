@@ -63,8 +63,8 @@ const TOKEN_VEHICLE_CABIN = 'var(--hero-vehicle-cabin)';
 const TOKEN_VEHICLE_GLASS = 'var(--hero-vehicle-glass)';
 const TOKEN_VEHICLE_WHEEL = 'var(--hero-vehicle-wheel)';
 const TOKEN_VEHICLE_WHEEL_CENTER = 'var(--hero-vehicle-wheel-center)';
-const MAP_LIGHT_SRC = `${BASE_PATH}/hero/locations/map-light.png`;
-const MAP_DARK_SRC = `${BASE_PATH}/hero/locations/map-dark.png`;
+const MAP_LIGHT_SRC = `${BASE_PATH}/hero/locations/map-light.webp`;
+const MAP_DARK_SRC = `${BASE_PATH}/hero/locations/map-dark.webp`;
 
 const STOP_POINTS: Record<StopId, { x: number; y: number }> = {
   montpellier: { x: 12, y: 50 },
@@ -132,6 +132,8 @@ export function HeroRouteVisual({
   vehicleAriaLabel,
   locations,
 }: HeroRouteVisualProps) {
+  const deferredStartTimeoutRef = useRef<number | null>(null);
+  const deferredStartIdleRef = useRef<number | null>(null);
   const { resolvedTheme } = useTheme();
   const [state, setState] = useState<{ direction: Direction; index: number; changedAt: number }>(() => ({
     direction: 'outbound',
@@ -143,6 +145,7 @@ export function HeroRouteVisual({
   const [motionAnchorLengths, setMotionAnchorLengths] = useState<Record<MotionAnchorId, number> | null>(
     null,
   );
+  const [hasDeferredStart, setHasDeferredStart] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const routePathRef = useRef<SVGPathElement | null>(null);
   const trailHeadRef = useRef(0);
@@ -166,6 +169,33 @@ export function HeroRouteVisual({
   });
 
   useEffect(() => {
+    const win = window as Window & {
+      requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    if (typeof win.requestIdleCallback === 'function') {
+      deferredStartIdleRef.current = win.requestIdleCallback(() => {
+        setHasDeferredStart(true);
+        deferredStartIdleRef.current = null;
+      });
+      return () => {
+        if (deferredStartIdleRef.current !== null && typeof win.cancelIdleCallback === 'function') {
+          win.cancelIdleCallback(deferredStartIdleRef.current);
+        }
+      };
+    }
+    deferredStartTimeoutRef.current = window.setTimeout(() => {
+      setHasDeferredStart(true);
+      deferredStartTimeoutRef.current = null;
+    }, 150);
+    return () => {
+      if (deferredStartTimeoutRef.current !== null) {
+        window.clearTimeout(deferredStartTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (!rootRef.current) return;
 
     const observer = new IntersectionObserver(
@@ -180,7 +210,7 @@ export function HeroRouteVisual({
   }, []);
 
   useEffect(() => {
-    if (!isInViewport) return;
+    if (!hasDeferredStart || !isInViewport) return;
     const id = setInterval(() => {
       setState((prev) => {
         const currentStops = getStops(prev.direction);
@@ -196,10 +226,10 @@ export function HeroRouteVisual({
       });
     }, STEP_MS);
     return () => clearInterval(id);
-  }, [isInViewport]);
+  }, [hasDeferredStart, isInViewport]);
 
   useEffect(() => {
-    if (reducedMotion || !isInViewport) return;
+    if (!hasDeferredStart || reducedMotion || !isInViewport) return;
     let frameId = 0;
     let lastStateUpdateMs = 0;
     const NOW_UPDATE_INTERVAL_MS = 80;
@@ -213,9 +243,10 @@ export function HeroRouteVisual({
     };
     frameId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frameId);
-  }, [reducedMotion, isInViewport]);
+  }, [hasDeferredStart, reducedMotion, isInViewport]);
 
   useEffect(() => {
+    if (!hasDeferredStart) return;
     const path = routePathRef.current;
     if (!path) return;
     const totalLength = path.getTotalLength();
@@ -264,7 +295,7 @@ export function HeroRouteVisual({
     );
 
     setMotionAnchorLengths(nearestLengthByStop);
-  }, []);
+  }, [hasDeferredStart]);
 
   const activeStops = getStops(state.direction);
   const activeStop = activeStops[state.index];
@@ -301,7 +332,7 @@ export function HeroRouteVisual({
   }, [activeMotionAnchor, nextMotionAnchor, segmentProgress, motionAnchorLengths, totalPathLength]);
 
   useEffect(() => {
-    if (reducedMotion || !isInViewport) return;
+    if (!hasDeferredStart || reducedMotion || !isInViewport) return;
     let frameId = 0;
     const hideTrailSegments = () => {
       for (let i = 0; i < TRAIL_SEGMENT_COUNT; i += 1) {
@@ -478,6 +509,7 @@ export function HeroRouteVisual({
     frameId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frameId);
   }, [
+    hasDeferredStart,
     reducedMotion,
     isInViewport,
     state.direction,

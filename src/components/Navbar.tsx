@@ -206,7 +206,7 @@ export function Navbar({ useHomeAnchorHref = false }: NavbarProps = {}) {
   return (
     <motion.header
       className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/85 max-md:flex max-md:flex-col max-md:pt-[env(safe-area-inset-top,0px)] md:border-none md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:flex md:justify-center md:px-4 md:pt-3"
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >

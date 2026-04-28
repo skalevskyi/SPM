@@ -299,6 +299,7 @@ export function VehicleSection() {
                   </p>
                   <Link
                     href={withBasePath('/trajets')}
+                    prefetch={false}
                     className="mt-2 inline-flex text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
                   >
                     {t.parcours.proofCta}
